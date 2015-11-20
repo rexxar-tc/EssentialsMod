@@ -129,7 +129,12 @@ namespace DedicatedEssentials
 					{
 						MyObjectBuilder_MotorAdvancedStator stator = (MyObjectBuilder_MotorAdvancedStator)cubeBlock.GetObjectBuilderCubeBlock();
 						IMyEntity connectedEntity = null;
-						if (MyAPIGateway.Entities.TryGetEntityById(stator.RotorEntityId, out connectedEntity))
+
+                        long rotorID = 0;
+                        if (stator.RotorEntityId.HasValue)
+                            rotorID = (long)stator.RotorEntityId;
+
+						if (MyAPIGateway.Entities.TryGetEntityById(rotorID, out connectedEntity))
 						{
 							IMyCubeGrid parent = (IMyCubeGrid)connectedEntity.Parent;
 							if (!checkedGrids.Contains(parent))
