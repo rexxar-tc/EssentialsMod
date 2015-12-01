@@ -11,9 +11,9 @@ namespace DedicatedEssentials
     public class Core : MySessionComponentBase
     {
         // Declarations
-        private static string version = "v0.1.0.9";
+        private static string version = "v0.1.1.1";
         private static bool m_debug = false;
-		private static bool m_showPosition = true;
+		private static bool m_showPosition = false;
 		private static string m_serverName = "";
         private static float m_serverBorder = 0f;
 		private static List<string> m_serverCommandList = new List<string>();

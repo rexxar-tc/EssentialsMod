@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 using Sandbox.ModAPI;
 using Sandbox.Common.ObjectBuilders;
 using VRage.ModAPI;
-
+using DedicatedEssentials;
 using VRageMath;
 
 namespace DedicatedEssentials
 {
 	public class ProcessPosition : SimulationProcessorBase
 	{
-		private bool m_init = false;
+		public bool m_init = false;
+        private bool m_clear = false;
 		private DateTime m_lastRun = DateTime.Now;
         private DateTime m_lastUpdate = DateTime.Now;
 
@@ -28,6 +29,13 @@ namespace DedicatedEssentials
 				m_init = true;
 				Init();
 			}
+            
+            if(!m_clear && Core.ShowPosition)
+            {
+                m_clear = true;
+                MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Clear();
+                MyAPIGateway.Utilities.GetObjectiveLine().Hide();
+            }
 
             if (Core.SetMaxSpeed)
                 ProcessMaxSpeed();
@@ -111,10 +119,12 @@ namespace DedicatedEssentials
 
 		public void Init()
 		{
-			MyAPIGateway.Utilities.GetObjectiveLine().Title = "";
-			MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Clear();
-			MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Add("");
-			MyAPIGateway.Utilities.GetObjectiveLine().Show();
+            
+                MyAPIGateway.Utilities.GetObjectiveLine().Title = "";
+                MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Clear();
+                MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Add("");
+                MyAPIGateway.Utilities.GetObjectiveLine().Show();
+                      
 		}
 	}
 }

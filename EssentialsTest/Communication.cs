@@ -88,17 +88,48 @@ namespace DedicatedEssentials
 			if (halfExtent == 0f)
 				halfExtent = 900000f;
 			*/
-			cubeGrid.PositionAndOrientation = new MyPositionAndOrientation(Vector3D.Zero, Vector3.Forward, Vector3.Up);
-			List<MyObjectBuilder_EntityBase> addList = new List<MyObjectBuilder_EntityBase>();
-			addList.Add(cubeGrid);
-			MyAPIGateway.Multiplayer.SendEntitiesCreated(addList);		
+			cubeGrid.PositionAndOrientation = new MyPositionAndOrientation(GenerateRandomEdgeVector(), Vector3.Forward, Vector3.Up);
+			//List<MyObjectBuilder_EntityBase> addList = new List<MyObjectBuilder_EntityBase>();
+			//addList.Add(cubeGrid);
+            //MyAPIGateway.Multiplayer.SendEntitiesCreated(addList);		
+            MyAPIGateway.Entities.CreateFromObjectBuilderAndAdd(cubeGrid);
 		}
 
-		private static float GenerateRandomCoord(float halfExtent)
-		{
-			float result = (m_random.Next(200) + halfExtent) * (m_random.Next(2) == 0 ? -1 : 1);
-			return result;
-		}
+        private static Vector3D GenerateRandomEdgeVector()
+        {
+            float halfExtent = MyAPIGateway.Entities.WorldSafeHalfExtent();
+            halfExtent += (halfExtent == 0 ? 900000 : -1000);
+            
+            int testRadius = 0;
+
+            Vector3D vectorPosition = new Vector3D(GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent));
+            BoundingSphereD positionSphere = new BoundingSphereD(vectorPosition, 5000);
+
+
+            
+            for (int i = 0; i < 20; ++i)
+            {
+                if (MyAPIGateway.Entities.GetIntersectionWithSphere(ref positionSphere) != null)
+                {
+                    vectorPosition = new Vector3D(GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent));
+                    positionSphere = new BoundingSphereD(vectorPosition, testRadius);
+                }
+                else
+                    return vectorPosition;
+            }
+
+            return new Vector3D(halfExtent, 0, 0);
+
+            //if we can't find an acceptable place, put it out on the very edge and hope there's nothing there
+        }
+
+        private static float GenerateRandomCoord(float halfExtent)
+        {
+            float result = (m_random.Next((int)halfExtent)) * (m_random.Next(2) == 0 ? -1 : 1);
+            //return a random distance between origin and +/- halfExtent
+            return result;
+
+        }
 
         /// <summary>
         /// This is kind of shitty.  I should just bitshift and copy the lengths, but whatever.  We're not sending

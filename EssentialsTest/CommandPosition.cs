@@ -23,10 +23,18 @@ namespace DedicatedEssentials
 		{
 			Core.ShowPosition = !Core.ShowPosition;
 			Communication.Message(string.Format("Show Position setting: {0}", Core.ShowPosition));
-			if (!Core.ShowPosition)
-				MyAPIGateway.Utilities.GetObjectiveLine().Hide();
-			else
-				MyAPIGateway.Utilities.GetObjectiveLine().Show();
-		}
+            if (!Core.ShowPosition)
+            {
+                MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Clear();
+                MyAPIGateway.Utilities.GetObjectiveLine().Hide();
+            }
+            else
+            {
+                ProcessPosition posInit = new ProcessPosition();
+                posInit.m_init = true;
+                posInit.Init();
+                MyAPIGateway.Utilities.GetObjectiveLine().Show();
+            }
+        }
 	}
 }
