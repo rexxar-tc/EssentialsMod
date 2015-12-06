@@ -30,7 +30,7 @@ namespace DedicatedEssentials
 				Init();
 			}
             
-            if(!m_clear && Core.ShowPosition)
+            if(!m_clear && !Core.ShowPosition)
             {
                 m_clear = true;
                 MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Clear();
