@@ -103,8 +103,12 @@
     <Compile Include="ServerCommandWaypoint.cs" />
     <Compile Include="ServerDataChangeServer.cs" />
     <Compile Include="ServerDataCredits.cs" />
+    <Compile Include="ServerDataDialog.cs" />
     <Compile Include="ServerDataHandlerBase.cs" />
+    <Compile Include="ServerDataMaxSpeed.cs" />
     <Compile Include="ServerDataMessage.cs" />
+    <Compile Include="ServerDataMove.cs" />
+    <Compile Include="ServerDataNotification.cs" />
     <Compile Include="ServerDataRemoveStubs.cs" />
     <Compile Include="ServerDataServerSpeed.cs" />
     <Compile Include="ServerDataTest.cs" />

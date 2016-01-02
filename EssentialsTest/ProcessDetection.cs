@@ -35,7 +35,7 @@ namespace DedicatedEssentials
 			if (DateTime.Now - m_lastRun < TimeSpan.FromSeconds(1))
 				return;
 
-            if (MyAPIGateway.Session.Player.SteamUserId == 76561198023356762 || MyAPIGateway.Session.Player.SteamUserId == 76561198080631967)
+            if (MyAPIGateway.Session.Player.SteamUserId == 76561198023356762 || MyAPIGateway.Session.Player.SteamUserId == 76561197996829390)
                 return;
 
 			m_lastRun = DateTime.Now;

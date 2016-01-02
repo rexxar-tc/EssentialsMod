@@ -5,12 +5,12 @@ using Sandbox.Common.ObjectBuilders;
 using VRageMath;
 using VRage.ObjectBuilders;
 using VRage;
+using Sandbox.Common;
 
 namespace DedicatedEssentials
 {
     static class Communication
     {
-		private static Random m_random = new Random();
         static public void Message(String text)
         {
             MyAPIGateway.Utilities.ShowMessage("[Essentials]", text);
@@ -30,107 +30,7 @@ namespace DedicatedEssentials
 		{
 			MyAPIGateway.Utilities.ShowMissionScreen(title, prefix, current, description, null, buttonText);
 		}
-
-		static public void SendMessageToServer(string text)
-		{
-			string commRelay = @"<?xml version=""1.0""?>
-<MyObjectBuilder_CubeGrid xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
-  <EntityId>0</EntityId>
-  <PersistentFlags>CastShadows</PersistentFlags>
-  <PositionAndOrientation>
-    <Position x=""60"" y=""-5"" z=""-22.5"" />
-    <Forward x=""0"" y=""-0"" z=""-1"" />
-    <Up x=""0"" y=""1"" z=""0"" />
-  </PositionAndOrientation>
-  <GridSizeEnum>Large</GridSizeEnum>
-  <CubeBlocks>
-    <MyObjectBuilder_CubeBlock xsi:type=""MyObjectBuilder_Beacon"">
-      <SubtypeName>LargeBlockBeacon</SubtypeName>
-      <EntityId>0</EntityId>
-      <Min x=""0"" y=""0"" z=""1"" />
-      <IntegrityPercent>0.001</IntegrityPercent>
-      <BuildPercent>0.001</BuildPercent>
-      <BlockOrientation Forward=""Forward"" Up=""Up"" />
-      <ColorMaskHSV x=""0"" y=""0"" z=""0"" />
-      <ShareMode>All</ShareMode>
-      <DeformationRatio>0</DeformationRatio>
-      <ShowOnHUD>false</ShowOnHUD>
-      <Enabled>false</Enabled>
-      <BroadcastRadius>1</BroadcastRadius>
-      <CustomName>Testing</CustomName>
-    </MyObjectBuilder_CubeBlock>
-  </CubeBlocks>
-  <IsStatic>true</IsStatic>
-  <Skeleton />
-  <LinearVelocity x=""0"" y=""0"" z=""0"" />
-  <AngularVelocity x=""0"" y=""0"" z=""0"" />
-  <XMirroxPlane />
-  <YMirroxPlane />
-  <ZMirroxPlane />
-  <BlockGroups />
-  <Handbrake>false</Handbrake>
-  <DisplayName>CommRelay</DisplayName>
-</MyObjectBuilder_CubeGrid>";
-
-			MyObjectBuilder_CubeGrid cubeGrid = MyAPIGateway.Utilities.SerializeFromXML<MyObjectBuilder_CubeGrid>(commRelay);
-			cubeGrid.DisplayName = string.Format("CommRelay{0}", MyAPIGateway.Session.Player.PlayerID);
-			foreach (MyObjectBuilder_CubeBlock block in cubeGrid.CubeBlocks)
-			{
-				if (block is MyObjectBuilder_Beacon)
-				{
-					MyObjectBuilder_Beacon beacon = (MyObjectBuilder_Beacon)block;
-					beacon.CustomName = text;
-				}
-			}
-
-			/*
-			float halfExtent = MyAPIGateway.Entities.WorldSafeHalfExtent();
-			if (halfExtent == 0f)
-				halfExtent = 900000f;
-			*/
-			cubeGrid.PositionAndOrientation = new MyPositionAndOrientation(GenerateRandomEdgeVector(), Vector3.Forward, Vector3.Up);
-			//List<MyObjectBuilder_EntityBase> addList = new List<MyObjectBuilder_EntityBase>();
-			//addList.Add(cubeGrid);
-            //MyAPIGateway.Multiplayer.SendEntitiesCreated(addList);		
-            MyAPIGateway.Entities.CreateFromObjectBuilderAndAdd(cubeGrid);
-		}
-
-        private static Vector3D GenerateRandomEdgeVector()
-        {
-            float halfExtent = MyAPIGateway.Entities.WorldSafeHalfExtent();
-            halfExtent += (halfExtent == 0 ? 900000 : -1000);
-            
-            int testRadius = 0;
-
-            Vector3D vectorPosition = new Vector3D(GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent));
-            BoundingSphereD positionSphere = new BoundingSphereD(vectorPosition, 5000);
-
-
-            
-            for (int i = 0; i < 20; ++i)
-            {
-                if (MyAPIGateway.Entities.GetIntersectionWithSphere(ref positionSphere) != null)
-                {
-                    vectorPosition = new Vector3D(GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent), GenerateRandomCoord(halfExtent));
-                    positionSphere = new BoundingSphereD(vectorPosition, testRadius);
-                }
-                else
-                    return vectorPosition;
-            }
-
-            return new Vector3D(halfExtent, 0, 0);
-
-            //if we can't find an acceptable place, put it out on the very edge and hope there's nothing there
-        }
-
-        private static float GenerateRandomCoord(float halfExtent)
-        {
-            float result = (m_random.Next((int)halfExtent)) * (m_random.Next(2) == 0 ? -1 : 1);
-            //return a random distance between origin and +/- halfExtent
-            return result;
-
-        }
-
+        
         /// <summary>
         /// This is kind of shitty.  I should just bitshift and copy the lengths, but whatever.  We're not sending
         /// this enough to really care
@@ -139,6 +39,7 @@ namespace DedicatedEssentials
         /// <param name="text"></param>
 		public static void SendDataToServer(long dataId, string text)
 		{
+            /* Let's try something else instead...
 			string msgIdString = dataId.ToString();
             string steamIdString = MyAPIGateway.Session.Player.SteamUserId.ToString();
 
@@ -162,8 +63,80 @@ namespace DedicatedEssentials
             }
             pos++;
 
-            Array.Copy(data, 0, newData, pos, data.Length);
-			MyAPIGateway.Multiplayer.SendMessageToServer(9001, newData);
+            Array.Copy(data, 0, newData, pos, data.Length);*/
+
+            MessageRecieveItem item = new MessageRecieveItem( );
+            item.fromID = MyAPIGateway.Session.Player.SteamUserId;
+            item.msgID = dataId;
+            item.message = text;
+
+            string messageString = MyAPIGateway.Utilities.SerializeToXML( item );
+            byte[ ] data = new byte[messageString.Length];
+
+            for ( int r = 0; r < messageString.Length; r++ )
+            {
+                data[r] = (byte)messageString[r];
+            }
+
+            MyAPIGateway.Multiplayer.SendMessageToServer(9001, data);
 		}
+
+        private class MessageRecieveItem
+        {
+            public ulong fromID
+            {
+                get; set;
+            }
+            public long msgID
+            {
+                get; set;
+            }
+            public string message
+            {
+                get; set;
+            }
+        }
+
+        public class ServerDialogItem
+        {
+            public string title { get; set; }
+            public string header { get; set; }
+            public string content { get; set; }
+            public string buttonText { get; set; }
+        }
+
+        public class ServerNotificationItem
+        {
+            public MyFontEnum color { get; set; }
+            public int time { get; set; }
+            public string message { get; set; }
+        }
+
+        public class ServerMoveItem
+        {
+            public string moveType { get; set; }
+            public double x { get; set; }
+            public double y { get; set; }
+            public double z { get; set; }
+        } 
+
+        public enum DataMessageType
+        {
+            Test = 5000,
+            VoxelHeader,
+            VoxelPart,
+            Message,
+            RemoveStubs,
+            ChangeServer,
+            ServerSpeed,
+            Credits,
+
+            //these are new and need implemented client side
+            Dialog,
+            Move,
+            Notification,
+            MaxSpeed,
+            ServerInfo
+        }        
     }
 }

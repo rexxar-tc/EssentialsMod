@@ -9,6 +9,7 @@ using Sandbox.Common.ObjectBuilders;
 using VRageMath;
 using System.Runtime.InteropServices;
 using Sandbox.Definitions;
+using VRage.ModAPI;
 
 namespace DedicatedEssentials
 {
@@ -33,7 +34,7 @@ namespace DedicatedEssentials
 				Communication.Message(string.Format("Entity - {0} {1} - Position: {2} - {3} - {4}", grid.DisplayName, grid.EntityId, grid.GetPosition(), grid.InScene, grid.MarkedForClose));
 			}
 
-			if (MyAPIGateway.Session.Player.SteamUserId == 76561198023356762 || MyAPIGateway.Session.Player.SteamUserId == 76561198080631967)
+			if (MyAPIGateway.Session.Player.SteamUserId == 76561198023356762 || MyAPIGateway.Session.Player.SteamUserId == 76561197996829390 )
 			{
                 if(words.Length > 0 && words[0] == "speed")
                 {
@@ -64,7 +65,6 @@ namespace DedicatedEssentials
                         }
                     }
 
-
                     return;
                 }
 
@@ -75,7 +75,24 @@ namespace DedicatedEssentials
                     return;
                 }
 
-				if (MyAPIGateway.Session.Player.Controller == null)
+                if ( words.Length > 0 && words[0] == "move" )
+                {
+                    try
+                    {
+                        Communication.Message( "Move test" );
+                        //IMyEntity entity = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity;
+                                Vector3D position = new Vector3D( 100000, 100000, 100000 );
+                        //        entity.SetPosition( position );
+                        MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.GetTopMostParent( ).SetPosition( position );
+                    }
+                    catch ( Exception ex )
+                    {
+                        Communication.Message( "test fail", ex.ToString( ) );
+                    }
+                    return;
+                }
+
+                    if (MyAPIGateway.Session.Player.Controller == null)
 				{
 					Communication.Message("Controller is null.");
 					return;

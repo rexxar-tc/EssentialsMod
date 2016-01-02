@@ -105,7 +105,6 @@ namespace DedicatedEssentials
 			ServerCommandHandlers.ServerCommands.Add(new ServerCommandDialog());
 			ServerCommandHandlers.ServerCommands.Add(new ServerCommandConceal());
 			ServerCommandHandlers.ServerCommands.Add(new ServerCommandReveal());
-			ServerCommandHandlers.ServerCommands.Add(new ServerCommandWaypoint());
 			ServerCommandHandlers.ServerCommands.Add(new ServerCommandMove());
 			ServerCommandHandlers.ServerCommands.Add(new ServerCommandTakeControl());
             //ServerCommandHandlers.ServerCommands.Add(new ServerCommandRemoveStubs());
@@ -119,6 +118,10 @@ namespace DedicatedEssentials
             m_dataHandlers.Add(new ServerDataChangeServer());
             m_dataHandlers.Add(new ServerDataServerSpeed());
             m_dataHandlers.Add(new ServerDataCredits());
+            m_dataHandlers.Add(new ServerDataDialog());
+            m_dataHandlers.Add(new ServerDataMove());
+            m_dataHandlers.Add(new ServerDataNotification());
+            m_dataHandlers.Add(new ServerDataMaxSpeed());
 
             // Setup Grid Tracker
             //CubeGridTracker.SetupGridTracking();
@@ -167,20 +170,10 @@ namespace DedicatedEssentials
 
 					return;
 				}
-
-				foreach (string command in ServerCommandList)
-				{
-					if (commandParts[0].ToLower() == command)
-					{
-						Communication.SendMessageToServer(messageText);
-						sendToOthers = false;
-                        return;
-					}
-				}
-
-                if (MyAPIGateway.Session != null && MyAPIGateway.Session.Name.Contains("Transcend"))
+                
+                if (messageText.StartsWith("/"))
                 {
-                    // Route messages to server
+                    //message is probably a command, and it's probably for us, so send it to the server
                     Communication.SendDataToServer(5010, messageText);
                     sendToOthers = false;
                     Communication.Message(MyAPIGateway.Session.Player.DisplayName, messageText);

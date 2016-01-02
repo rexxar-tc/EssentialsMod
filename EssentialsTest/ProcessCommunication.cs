@@ -92,8 +92,6 @@ namespace DedicatedEssentials
 
 							//Communication.Message(string.Format("Server Command Found: {0}", str));
 						}
-                        //if (!beacon.CustomName.ToLower().Contains("v_essential:"))
-                        //    ParseGlobal("v_essential:0.0.0.0");
 
 						break;
 					}
@@ -121,46 +119,6 @@ namespace DedicatedEssentials
 
                 Logging.Instance.WriteLine(string.Format("Border: {0}", Core.ServerBorder));
             }
-
-            /*
-            if(data.ToLower().StartsWith("v_essential:"))
-            {
-                string[] split = data.Split(new char[] { ':' });
-                if (!split[1].Contains("0.0.0.0"))
-                {
-                    try
-                    {
-                        using (TextReader reader = MyAPIGateway.Utilities.ReadFileInLocalStorage("Version.txt", typeof(ProcessCommunication)))
-                        using (TextWriter writer = MyAPIGateway.Utilities.WriteFileInLocalStorage("Version.txt", typeof(ProcessCommunication)))
-                        {
-                            if (MySandboxGame.ConfigDedicated.Administrators.Any(userId => MyAPIGateway.Session.Player.PlayerID.ToString().Equals(userId)))
-                            {
-                                string versionLine = reader.ReadLine();
-
-                                if (versionLine ==null )
-                                {
-                                    writer.Write("essentials_notified&0.0.0.0&");
-                                    //notify admin of version update
-                                    string message =
-                                        "There is an important for SEServerExtender and the Essentials plugin!|" +
-                                        "This update fixes a lot of critical issues and crashes. There are a few new features as well!|" +
-                                        "Please go to the SE forum at forums.keensoftwarehouse.com then go to the dedicated server subforum in the multiplayer section. " +
-                                        "Check the the 'SE Server Extender and Essentials help thread' thread for links to the latest updates.||" +
-                                        "This message will only appear once. Happy engineering!";
-                                    MyAPIGateway.Utilities.ShowMissionScreen("SESE Essentials plugin", "Important update available!", null, message, null, "close");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Instance.WriteLine(String.Format("Load(): {0}", ex.ToString()));
-                    }
-                }
-
-            }
-            */
-
 		}
     }
 }
