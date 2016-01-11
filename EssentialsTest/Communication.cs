@@ -11,7 +11,7 @@ namespace DedicatedEssentials
 {
     static class Communication
     {
-        static public void Message(String text)
+        static public void Message(string text)
         {
             MyAPIGateway.Utilities.ShowMessage("[Essentials]", text);
         }
@@ -21,7 +21,7 @@ namespace DedicatedEssentials
 			MyAPIGateway.Utilities.ShowMessage(string.Format("{0}", from), text);
 		}
 
-        static public void Notification(String text, int disappearTimeMS = 2000, Sandbox.Common.MyFontEnum fontEnum = Sandbox.Common.MyFontEnum.White)
+        static public void Notification(string text, int disappearTimeMS = 2000, MyFontEnum fontEnum = MyFontEnum.White)
         {
             MyAPIGateway.Utilities.ShowNotification(text, disappearTimeMS, fontEnum);
         }
@@ -81,7 +81,7 @@ namespace DedicatedEssentials
             MyAPIGateway.Multiplayer.SendMessageToServer(9001, data);
 		}
 
-        private class MessageRecieveItem
+        public class MessageRecieveItem
         {
             public ulong fromID
             {

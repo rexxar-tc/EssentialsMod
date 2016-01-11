@@ -38,9 +38,20 @@ namespace DedicatedEssentials
 			{
                 if(words.Length > 0 && words[0] == "speed")
                 {
-                    Core.SetMaxSpeed = true;
-                    Core.MaxSpeed = 50f;
-                    Communication.Message("Speed Test enabled");
+                    if ( !Core.SetMaxSpeed )
+                    {
+                        float speed = 50f;
+                        Core.SetMaxSpeed = true;
+                        if ( words.Length > 1 )
+                            if ( float.TryParse( words[1], out speed ) ) {}
+                        Core.MaxSpeed = speed;
+                        Communication.Message( "Speed Test enabled. Speed: " + speed.ToString() );
+                    }
+                    else
+                    {
+                        Core.SetMaxSpeed = false;
+                        Communication.Message( "Speed Test disabled" );
+                    }
                     return;
                 }
 

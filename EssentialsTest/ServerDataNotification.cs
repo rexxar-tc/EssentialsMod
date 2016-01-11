@@ -25,7 +25,8 @@ namespace DedicatedEssentials
 
             ServerNotificationItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerNotificationItem>( text );
             if ( item != null )
-                Communication.Notification( item.message, item.time, item.color );
+                    Communication.Notification( item.message, item.time, item.color );
+            
         }
     }
 

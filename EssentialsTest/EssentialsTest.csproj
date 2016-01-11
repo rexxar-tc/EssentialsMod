@@ -54,6 +54,12 @@
     <Reference Include="Sandbox.Game">
       <HintPath>E:\Steam\SteamApps\common\SpaceEngineers\Bin\Sandbox.Game.dll</HintPath>
     </Reference>
+    <Reference Include="SpaceEngineers.ObjectBuilders">
+      <HintPath>..\..\SEServerExtender\GameLibraries\SpaceEngineers.ObjectBuilders.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceEngineers.ObjectBuilders.XmlSerializers">
+      <HintPath>..\..\SEServerExtender\GameLibraries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -66,6 +72,10 @@
     </Reference>
     <Reference Include="VRage.Game">
       <HintPath>E:\Steam\SteamApps\common\SpaceEngineers\Bin\VRage.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Game.XmlSerializers, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SEServerExtender\GameLibraries\VRage.Game.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="VRage.Library">
       <HintPath>E:\Steam\SteamApps\common\SpaceEngineers\Bin\VRage.Library.dll</HintPath>
@@ -100,11 +110,11 @@
     <Compile Include="ServerCommandRemoveStubs.cs" />
     <Compile Include="ServerCommandReveal.cs" />
     <Compile Include="ServerCommandTakeControl.cs" />
-    <Compile Include="ServerCommandWaypoint.cs" />
     <Compile Include="ServerDataChangeServer.cs" />
     <Compile Include="ServerDataCredits.cs" />
     <Compile Include="ServerDataDialog.cs" />
     <Compile Include="ServerDataHandlerBase.cs" />
+    <Compile Include="ServerDataInfo.cs" />
     <Compile Include="ServerDataMaxSpeed.cs" />
     <Compile Include="ServerDataMessage.cs" />
     <Compile Include="ServerDataMove.cs" />

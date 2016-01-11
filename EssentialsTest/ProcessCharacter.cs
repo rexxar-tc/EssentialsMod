@@ -31,7 +31,7 @@ namespace DedicatedEssentials
                 {
                     string entityId = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.EntityId.ToString();
                     //Logging.Instance.WriteLine(string.Format("ID: {0}", entityId));
-                    Communication.SendDataToServer(5012, entityId);
+                    //Communication.SendDataToServer(5012, entityId);
                 }
             }
 		}

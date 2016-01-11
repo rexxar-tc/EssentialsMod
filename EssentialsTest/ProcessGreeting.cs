@@ -24,7 +24,7 @@ namespace DedicatedEssentials
             if(!m_ran)
             {
                 m_ran = true;
-                Communication.SendDataToServer(5011, "Login");
+                //Communication.SendDataToServer(5011, "Login");
             }
 		}
 	}

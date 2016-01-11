@@ -26,7 +26,7 @@ namespace DedicatedEssentials
         private List<CommandHandlerBase> m_chatHandlers = new List<CommandHandlerBase>();
         private List<SimulationProcessorBase> m_simHandlers = new List<SimulationProcessorBase>();
 		private List<ServerDataHandlerBase> m_dataHandlers = new List<ServerDataHandlerBase>();
-        
+                
         // Properties
         public static bool Debug
         {
@@ -79,14 +79,17 @@ namespace DedicatedEssentials
 
         public static string ServerSpeed { get; set; }
 
+        public static bool ExtenderDataReady { get; set; }
+
         // Initializers
         private void Initialize()
         {
-			// Load Settings
-			//Settings.Instance.Load();
+
+            // Load Settings
+            //Settings.Instance.Load();
 
             // Chat Line Event
-            AddMessageHandler();
+            AddMessageHandler( );
 
             // Chat Handlers
 			m_chatHandlers.Add(new CommandTest());
@@ -122,6 +125,7 @@ namespace DedicatedEssentials
             m_dataHandlers.Add(new ServerDataMove());
             m_dataHandlers.Add(new ServerDataNotification());
             m_dataHandlers.Add(new ServerDataMaxSpeed());
+            m_dataHandlers.Add(new ServerDataInfo());
 
             // Setup Grid Tracker
             //CubeGridTracker.SetupGridTracking();
@@ -130,6 +134,9 @@ namespace DedicatedEssentials
 
             ServerSpeed = "";
             Credits = "";
+
+            Communication.SendDataToServer( 5015, "init" );
+            
         }
 
         // Utility
@@ -171,12 +178,13 @@ namespace DedicatedEssentials
 					return;
 				}
                 
-                if (messageText.StartsWith("/"))
+                if (ExtenderDataReady && messageText.StartsWith("/"))
                 {
                     //message is probably a command, and it's probably for us, so send it to the server
                     Communication.SendDataToServer(5010, messageText);
                     sendToOthers = false;
                     Communication.Message(MyAPIGateway.Session.Player.DisplayName, messageText);
+                    return;
                 }
             }
             catch (Exception ex)

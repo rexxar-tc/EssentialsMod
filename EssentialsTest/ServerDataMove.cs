@@ -29,6 +29,12 @@ namespace DedicatedEssentials
             {
                 Vector3D position = new Vector3D( item.x, item.y, item.z );
 
+                if ( item.entityId != 0 )
+                {
+                    IMyEntity entityToMove = MyAPIGateway.Entities.GetEntityById( item.entityId );
+                    entityToMove.GetTopMostParent( ).SetPosition( position );
+                }
+
                 if ( item.moveType == "normal" )
                 {
                     MoveControlledEntity( position );
@@ -99,6 +105,9 @@ namespace DedicatedEssentials
             {
                 Logging.Instance.WriteLine( string.Format( "Ejecting player" ) );
                 MyAPIGateway.Session.Player.Controller.ControlledEntity.Use( );
+                entity.Physics.LinearVelocity = Vector3D.Zero;
+                entity.Physics.AngularVelocity = Vector3D.Zero;
+                //stop the ship so the player doesn't smash into a wall or something
 
                 Timer timer = new Timer( );
                 timer.Interval = 500;
@@ -117,22 +126,11 @@ namespace DedicatedEssentials
 
         public class ServerMoveItem
         {
-            public string moveType
-            {
-                get; set;
-            }
-            public double x
-            {
-                get; set;
-            }
-            public double y
-            {
-                get; set;
-            }
-            public double z
-            {
-                get; set;
-            }
-        }
+            public string moveType { get; set; }
+            public double x { get; set; }
+            public double y { get; set; }
+            public double z { get; set; }
+            public long entityId { get; set; }
+        } 
     }
 }
