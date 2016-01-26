@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,9 +19,7 @@ namespace DedicatedEssentials
 
 		public override void HandleCommand(byte[] data)
 		{
-			string text = "";
-			for(int r = 0; r < data.Length; r++)
-				text += (char)data[r];
+            string text = Encoding.Unicode.GetString( data );
 
 			ServerMessageItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerMessageItem>(text);
 			if (item != null)

@@ -20,7 +20,8 @@ namespace DedicatedEssentials
         {
             //ulong steamId = (ulong)((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + (data[3]));
             //if ( BitConverter.ToUInt64( data, 0 ) == MyAPIGateway.Session.Player.SteamUserId )
-                Core.ExtenderDataReady = true;
+            //Logging.Instance.WriteLine( "ExtenderDataReady" );
+            //Core.ExtenderDataReady = true;
         }
     }    
 }

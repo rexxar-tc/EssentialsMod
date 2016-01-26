@@ -24,9 +24,7 @@ namespace DedicatedEssentials
             {
                 Logging.Instance.WriteLine(string.Format("Received ServerSpeed: {0}", data.Length));
 
-                string serverSpeed = "";
-                for (int r = 0; r < data.Length; r++)
-                    serverSpeed += (char)data[r];
+                string serverSpeed = Encoding.Unicode.GetString( data );
 
                 Core.ServerSpeed = serverSpeed;
             }

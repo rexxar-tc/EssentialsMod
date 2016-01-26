@@ -110,6 +110,7 @@
     <Compile Include="ServerCommandRemoveStubs.cs" />
     <Compile Include="ServerCommandReveal.cs" />
     <Compile Include="ServerCommandTakeControl.cs" />
+    <Compile Include="ServerDataWaypoint.cs" />
     <Compile Include="ServerDataChangeServer.cs" />
     <Compile Include="ServerDataCredits.cs" />
     <Compile Include="ServerDataDialog.cs" />

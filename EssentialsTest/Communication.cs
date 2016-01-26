@@ -6,10 +6,11 @@ using VRageMath;
 using VRage.ObjectBuilders;
 using VRage;
 using Sandbox.Common;
+using System.Text;
 
 namespace DedicatedEssentials
 {
-    static class Communication
+    public static class Communication
     {
         static public void Message(string text)
         {
@@ -23,7 +24,8 @@ namespace DedicatedEssentials
 
         static public void Notification(string text, int disappearTimeMS = 2000, MyFontEnum fontEnum = MyFontEnum.White)
         {
-            MyAPIGateway.Utilities.ShowNotification(text, disappearTimeMS, fontEnum);
+            if ( disappearTimeMS > 0 )
+                MyAPIGateway.Utilities.ShowNotification(text, disappearTimeMS, fontEnum);
         }
 
 		static public void Dialog(string title, string prefix, string current, string description, string buttonText)
@@ -70,16 +72,18 @@ namespace DedicatedEssentials
             item.msgID = dataId;
             item.message = text;
 
-            string messageString = MyAPIGateway.Utilities.SerializeToXML( item );
-            byte[ ] data = new byte[messageString.Length];
+            string messageString = MyAPIGateway.Utilities.SerializeToXML<MessageRecieveItem>( item );
+            Logging.Instance.WriteLine( messageString );
+            /*byte[ ] data = new byte[messageString.Length];
 
             for ( int r = 0; r < messageString.Length; r++ )
             {
                 data[r] = (byte)messageString[r];
-            }
-
+            }*/
+            byte[ ] data = Encoding.Unicode.GetBytes( messageString );
             MyAPIGateway.Multiplayer.SendMessageToServer(9001, data);
-		}
+            MyAPIGateway.Multiplayer.SendMessageToServer( 9003, data );
+        }
 
         public class MessageRecieveItem
         {

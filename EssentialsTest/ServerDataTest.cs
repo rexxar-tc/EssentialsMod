@@ -18,11 +18,9 @@ namespace DedicatedEssentials
 
 		public override void HandleCommand(byte[] data)
 		{
-			string text = "";
-			for(int r = 0; r < data.Length; r++)
-				text += (char)data[r];
+			string text = Encoding.Unicode.GetString( data );
 
-			Communication.Message("Server", string.Format("Message: {0}", text));
+            Communication.Message("Server", string.Format("Message: {0}", text));
 		}
 	}
 }

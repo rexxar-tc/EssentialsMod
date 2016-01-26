@@ -10,6 +10,7 @@ using Sandbox.ModAPI.Interfaces;
 using Sandbox.Definitions;
 
 using VRageMath;
+using Sandbox.Engine.Utils;
 
 namespace DedicatedEssentials
 {
@@ -29,7 +30,7 @@ namespace DedicatedEssentials
             {
                 if(MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity is IMyCharacter)
                 {
-                    string entityId = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.EntityId.ToString();
+                    //string entityId = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.EntityId.ToString();
                     //Logging.Instance.WriteLine(string.Format("ID: {0}", entityId));
                     //Communication.SendDataToServer(5012, entityId);
                 }

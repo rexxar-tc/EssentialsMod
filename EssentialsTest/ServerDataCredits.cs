@@ -22,9 +22,7 @@ namespace DedicatedEssentials
 		{
             try
             {
-                string credits = "";
-                for (int r = 0; r < data.Length; r++)
-                    credits += (char)data[r];
+                string credits = Encoding.Unicode.GetString( data );
 
                 Core.Credits = credits;
             }

@@ -4,6 +4,12 @@ using System.Linq;
 using Sandbox.Common;
 using Sandbox.ModAPI;
 using Sandbox.Definitions;
+using VRage.Game.Components;
+using VRage.Input;
+using VRage.ModAPI;
+//using Sandbox.ModAPI.Ingame;
+using DedicatedEssentials;
+using Sandbox.Game.GameSystems;
 
 namespace DedicatedEssentials
 {
@@ -78,8 +84,7 @@ namespace DedicatedEssentials
         public static string Credits { get; set; }
 
         public static string ServerSpeed { get; set; }
-
-        public static bool ExtenderDataReady { get; set; }
+        
 
         // Initializers
         private void Initialize()
@@ -135,16 +140,36 @@ namespace DedicatedEssentials
             ServerSpeed = "";
             Credits = "";
 
-            Communication.SendDataToServer( 5015, "init" );
+            //Communication.SendDataToServer( 5015, "init" );
+
+           // MyAPIGateway.Entities.OnEntityAdd += Entities_OnEntityAdd;
             
         }
+        /*
+        private void Entities_OnEntityAdd( IMyEntity entity )
+        {
+            ///HACK: workaround because the Sync flag is not being respected
+            ///remove it whenever the devs fix it
+            ///this is so remote player's waypoints don't show up on the local client
+            if ( !(entity is IMyCubeGrid) )
+                return;
+
+            if ( entity.DisplayName == "Waypoint" && !ServerDataWaypoint.ClientWaypoints.Contains( entity.EntityId ) )
+            {
+                MyAPIGateway.Utilities.InvokeOnGameThread( ( ) =>
+                 {
+                     entity.Close( );
+                 } );
+                Logging.Instance.WriteLine( "Removed remote waypoint" );
+            }
+        }*/
 
         // Utility
         public void HandleMessageEntered(string messageText, ref bool sendToOthers)
         {
             try
             {
-                string[] commandParts = messageText.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                string[ ] commandParts = messageText.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 				if (commandParts[0].ToLower() == "/essential")
 				{
 					int paramCount = commandParts.Length - 1;
@@ -178,12 +203,13 @@ namespace DedicatedEssentials
 					return;
 				}
                 
-                if (ExtenderDataReady && messageText.StartsWith("/"))
+                if (messageText.StartsWith("/"))
                 {
                     //message is probably a command, and it's probably for us, so send it to the server
                     Communication.SendDataToServer(5010, messageText);
                     sendToOthers = false;
                     Communication.Message(MyAPIGateway.Session.Player.DisplayName, messageText);
+                    Logging.Instance.WriteLine( "Command entered: " + messageText );
                     return;
                 }
             }
@@ -249,7 +275,8 @@ namespace DedicatedEssentials
 				{
 					simHandler.Handle();
 				}
-			}
+                
+            }
 			catch (Exception ex)
 			{
 				Logging.Instance.WriteLine(String.Format("UpdateBeforeSimulation(): {0}", ex.ToString()));

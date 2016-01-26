@@ -19,9 +19,7 @@ namespace DedicatedEssentials
 
         public override void HandleCommand( byte[ ] data )
         {
-            string text = "";
-            for ( int r = 0; r < data.Length; r++ )
-                text += (char)data[r];
+            string text = Encoding.Unicode.GetString( data );
 
             float speed = MyAPIGateway.Utilities.SerializeFromXML<float>( text );
             if ( speed != 0f )
