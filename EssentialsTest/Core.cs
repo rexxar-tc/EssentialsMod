@@ -84,6 +84,8 @@ namespace DedicatedEssentials
         public static string Credits { get; set; }
 
         public static string ServerSpeed { get; set; }
+
+        public static bool DataReady = false;
         
 
         // Initializers
@@ -203,7 +205,7 @@ namespace DedicatedEssentials
 					return;
 				}
                 
-                if (messageText.StartsWith("/"))
+                if (messageText.StartsWith("/") && DataReady)
                 {
                     //message is probably a command, and it's probably for us, so send it to the server
                     Communication.SendDataToServer(5010, messageText);

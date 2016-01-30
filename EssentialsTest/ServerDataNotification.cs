@@ -19,11 +19,18 @@ namespace DedicatedEssentials
 
         public override void HandleCommand( byte[ ] data )
         {
-            string text = Encoding.Unicode.GetString( data );
+            try
+            {
+                string text = Encoding.Unicode.GetString( data );
 
-            ServerNotificationItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerNotificationItem>( text );
-            if ( item != null )
+                ServerNotificationItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerNotificationItem>( text );
+                if ( item != null )
                     Communication.Notification( item.message, item.time, item.color );
+            }
+            catch
+            {
+                Logging.Instance.WriteLine( "Error parsing notification item" );
+            }
             
         }
     }
