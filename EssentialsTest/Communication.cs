@@ -7,6 +7,7 @@ using VRage.ObjectBuilders;
 using VRage;
 using Sandbox.Common;
 using System.Text;
+using VRage.Game;
 
 namespace DedicatedEssentials
 {
@@ -80,7 +81,7 @@ namespace DedicatedEssentials
             {
                 data[r] = (byte)messageString[r];
             }*/
-            byte[ ] data = Encoding.Unicode.GetBytes( messageString );
+            byte[ ] data = Encoding.UTF8.GetBytes( messageString );
             MyAPIGateway.Multiplayer.SendMessageToServer(9001, data);
             MyAPIGateway.Multiplayer.SendMessageToServer( 9003, data );
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Sandbox.Common;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
+using VRage.Game;
 using VRageMath;
 
 namespace DedicatedEssentials
@@ -21,7 +22,7 @@ namespace DedicatedEssentials
         {
             try
             {
-                string text = Encoding.Unicode.GetString( data );
+                string text = Encoding.UTF8.GetString( data );
 
                 ServerNotificationItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerNotificationItem>( text );
                 if ( item != null )

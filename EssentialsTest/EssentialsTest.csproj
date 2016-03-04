@@ -54,6 +54,10 @@
     <Reference Include="Sandbox.Game">
       <HintPath>E:\Steam\SteamApps\common\SpaceEngineers\Bin\Sandbox.Game.dll</HintPath>
     </Reference>
+    <Reference Include="Sandbox.Graphics, Version=0.1.5885.31772, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SEServerExtender\GameLibraries\Sandbox.Graphics.dll</HintPath>
+    </Reference>
     <Reference Include="SpaceEngineers.ObjectBuilders">
       <HintPath>..\..\SEServerExtender\GameLibraries\SpaceEngineers.ObjectBuilders.dll</HintPath>
     </Reference>
@@ -110,6 +114,7 @@
     <Compile Include="ServerCommandRemoveStubs.cs" />
     <Compile Include="ServerCommandReveal.cs" />
     <Compile Include="ServerCommandTakeControl.cs" />
+    <Compile Include="ServerCommandWaypoint.cs" />
     <Compile Include="ServerDataWaypoint.cs" />
     <Compile Include="ServerDataChangeServer.cs" />
     <Compile Include="ServerDataCredits.cs" />

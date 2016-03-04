@@ -2,7 +2,6 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
@@ -19,7 +18,7 @@ namespace DedicatedEssentials
 
 		public override void HandleCommand(byte[] data)
 		{
-            string text = Encoding.Unicode.GetString( data );
+            string text = Encoding.UTF8.GetString( data );
 
 			ServerMessageItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerMessageItem>(text);
 			if (item != null)

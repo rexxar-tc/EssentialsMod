@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sandbox.Common;
@@ -10,6 +11,10 @@ using VRage.ModAPI;
 //using Sandbox.ModAPI.Ingame;
 using DedicatedEssentials;
 using Sandbox.Game.GameSystems;
+using Sandbox.Graphics;
+using VRage;
+using VRage.Game;
+using VRageMath;
 
 namespace DedicatedEssentials
 {
@@ -85,8 +90,12 @@ namespace DedicatedEssentials
 
         public static string ServerSpeed { get; set; }
 
-        public static bool DataReady = false;
-        
+        private static DateTime _lastMessageTime = DateTime.Now;
+        private static byte[] _lastMessageBytes;
+
+        public static bool drawLines;
+        public static HashSet<MyOrientedBoundingBoxD>  boxes = new HashSet<MyOrientedBoundingBoxD>();
+        public static List<LineStruct> PointsList = new List<LineStruct>();
 
         // Initializers
         private void Initialize()
@@ -133,6 +142,7 @@ namespace DedicatedEssentials
             m_dataHandlers.Add(new ServerDataNotification());
             m_dataHandlers.Add(new ServerDataMaxSpeed());
             m_dataHandlers.Add(new ServerDataInfo());
+            m_dataHandlers.Add(new ServerDataWaypoint());
 
             // Setup Grid Tracker
             //CubeGridTracker.SetupGridTracking();
@@ -144,27 +154,23 @@ namespace DedicatedEssentials
 
             //Communication.SendDataToServer( 5015, "init" );
 
-           // MyAPIGateway.Entities.OnEntityAdd += Entities_OnEntityAdd;
-            
-        }
-        /*
+            MyAPIGateway.Entities.OnEntityAdd += Entities_OnEntityAdd;
+       }
+
         private void Entities_OnEntityAdd( IMyEntity entity )
         {
-            ///HACK: workaround because the Sync flag is not being respected
-            ///remove it whenever the devs fix it
-            ///this is so remote player's waypoints don't show up on the local client
+            //HACK: workaround because the Sync flag is not being respected
+            //remove it whenever the devs fix it
+            //this is so remote player's waypoints don't show up on the local client
             if ( !(entity is IMyCubeGrid) )
                 return;
 
-            if ( entity.DisplayName == "Waypoint" && !ServerDataWaypoint.ClientWaypoints.Contains( entity.EntityId ) )
+            if ( entity.DisplayName.StartsWith("Waypoint_") && !ServerDataWaypoint.ClientWaypoints.Contains( entity.EntityId ) )
             {
-                MyAPIGateway.Utilities.InvokeOnGameThread( ( ) =>
-                 {
-                     entity.Close( );
-                 } );
+                //entity.Close();
                 Logging.Instance.WriteLine( "Removed remote waypoint" );
             }
-        }*/
+        }
 
         // Utility
         public void HandleMessageEntered(string messageText, ref bool sendToOthers)
@@ -205,7 +211,7 @@ namespace DedicatedEssentials
 					return;
 				}
                 
-                if (messageText.StartsWith("/") && DataReady)
+                if (messageText.StartsWith("/"))
                 {
                     //message is probably a command, and it's probably for us, so send it to the server
                     Communication.SendDataToServer(5010, messageText);
@@ -225,6 +231,23 @@ namespace DedicatedEssentials
 		{
             if (MyAPIGateway.Multiplayer.IsServer)
                 return;
+
+            //look for duplicate messages coming within 200ms of each other
+		    if (DateTime.Now - _lastMessageTime < TimeSpan.FromMilliseconds(200))
+		    {
+		        if(Utility.CompareBytes(data, _lastMessageBytes))
+		        {
+		            //we received a duplicate message, ignore it and print info to log
+		            _lastMessageTime = DateTime.Now;
+                    Logging.Instance.WriteLine("Received duplicate message from server.");
+		            return;
+		        }
+		    }
+
+            //store the current message and its time so we can check for duplicate messages
+            //because steam
+		    _lastMessageTime = DateTime.Now;
+		    _lastMessageBytes = data;
 
 			Logging.Instance.WriteLine(string.Format("Received Server Data: {0} bytes", data.Length));
 			foreach (ServerDataHandlerBase handler in m_dataHandlers)
@@ -265,8 +288,11 @@ namespace DedicatedEssentials
 				if (MyAPIGateway.Session == null)
 					return;
 
-				// Run the init
-				if (!m_initialized)
+			    if(drawLines)
+                    DrawLines();
+
+                // Run the init
+                if ( !m_initialized)
 				{
 					m_initialized = true;
 					Initialize();
@@ -319,6 +345,25 @@ namespace DedicatedEssentials
             catch { }
 
             base.UnloadData();
+        }
+       
+        private void DrawLines()
+        {
+            foreach ( var line in PointsList )
+            {
+                Vector4 color = Color.LemonChiffon.ToVector4( );
+                MySimpleObjectDraw.DrawLine( line.startPoint, line.endPoint, "WeaponLaserIgnoreDepth", ref color, 1f );
+            }
+        }
+        public struct LineStruct
+        {
+            public LineStruct( Vector3D start, Vector3D end )
+            {
+                startPoint = start;
+                endPoint = end;
+            }
+            public Vector3D startPoint;
+            public Vector3D endPoint;
         }
     }
 }

@@ -10,52 +10,35 @@ using Sandbox.ModAPI.Interfaces;
 
 using VRageMath;
 using VRage;
-using VRage.Game;
 using VRage.ModAPI;
 using System.Timers;
+using VRage.Game;
 
 namespace DedicatedEssentials
-{    
-	public class ServerDataWaypoint : ServerDataHandlerBase
+{
+	public class ServerCommandWaypoint : ServerCommandHandlerBase
 	{
-        private static List<long> clientWaypoints = new List<long>( );
-        public static List<long> ClientWaypoints
-        {
-            get
-            {
-                return clientWaypoints;
-            }
-            private set
-            {
-                clientWaypoints = value;
-            }
-        }
-
-        public override long GetDataId( )
-        {
-            return 5025;
-        }    
-
-    public enum WaypointTypes
+		public enum WaypointTypes
 		{
 			Neutral,
 			Allied,
 			Enemy
 		}
 
+		public override string GetCommandText()
+		{
+			return "/waypoint";
+		}
+
 		// /waypoint add "name" "text" X Y Z
 		// /waypoint remove "name"
-		public override void HandleCommand(byte[] data)
+		public override void HandleCommand(string[] words)
 		{
-            string text = Encoding.UTF8.GetString( data );
+			Logging.Instance.WriteLine(string.Format("Waypoint: {0}", string.Join(" ", words)));
 
-            //string[ ] words = text.Split( new string[ ] { " " }, StringSplitOptions.RemoveEmptyEntries );
+			string[] splits = Utility.SplitString(string.Join(" ", words));
 
-            Logging.Instance.WriteLine( string.Format( "Waypoint: {0}", text ) );
-
-            string[ ] splits = Utility.SplitString( text );
-
-            if (splits[0] == "add")
+			if (splits[0] == "add")
 			{
 				long distance = 1000001L;
 				Vector3D vector = new Vector3D(double.Parse(splits[4]), double.Parse(splits[5]), double.Parse(splits[6]));
@@ -119,7 +102,7 @@ namespace DedicatedEssentials
                 <SubtypeName>Uranium</SubtypeName>
             </PhysicalContent>
             <ItemId>0</ItemId>
-            <AmountDecimal>10000</AmountDecimal>
+            <AmountDecimal>1</AmountDecimal>
             </MyObjectBuilder_InventoryItem>
         </Items>
         <nextItemId>1</nextItemId>
@@ -160,47 +143,23 @@ namespace DedicatedEssentials
 					}
 				}
 
-                MyAPIGateway.Entities.RemapObjectBuilder(cubeGrid);
-                cubeGrid.PositionAndOrientation = new MyPositionAndOrientation( position, Vector3.Forward, Vector3.Up );
-                IMyEntity entity = MyAPIGateway.Entities.CreateFromObjectBuilder( cubeGrid );
-                if ( entity != null )
-                    Logging.Instance.WriteLine( string.Format( "Waypoint added" ) );
-                
-                if ( entity.Physics == null )
-                    Logging.Instance.WriteLine( string.Format( "Physics is null" ) );
-                else
-                    entity.Physics.Enabled = false;
+				cubeGrid.PositionAndOrientation = new MyPositionAndOrientation(position, Vector3.Forward, Vector3.Up);
+				IMyEntity entity = MyAPIGateway.Entities.CreateFromObjectBuilderAndAdd(cubeGrid);
+				if (entity != null)
+					Logging.Instance.WriteLine(string.Format("Waypoint added"));
 
-                entity.Flags &= ~EntityFlags.Visible;
-                entity.Flags &= ~EntityFlags.Sync;
-                entity.Flags &= ~EntityFlags.Save;
+				// This makes the model invisible, but still function
+				if (entity.PositionComp == null)
+					Logging.Instance.WriteLine(string.Format("PositionComp is null"));
+				else
+					entity.PositionComp.Scale = 0.001f;
 
-                ClientWaypoints.Add( entity.EntityId );
-                MyAPIGateway.Entities.AddEntity( entity, true );
-                //HACK: workaround because the Sync flag is not being respected
-                //remove this whenever the devs fix it
-                //spawn the waypoint in disabled because they show up for one game tick
-                //on all remote clients. wait a bit for them to cleanup then turn it on
-                /*
-                Timer timer = new Timer( );
-                timer.Interval = 100;
-                timer.Elapsed += ( object source, ElapsedEventArgs e ) =>
-                {
-                    List<IMySlimBlock> blocks = new List<IMySlimBlock>( );
-                    ((IMyCubeGrid)entity).GetBlocks( blocks );
-                    foreach ( IMySlimBlock block in blocks )
-                    {
-                        IMyCubeBlock cubeBlock = block.FatBlock;
+				if(entity.Physics == null)
+					Logging.Instance.WriteLine(string.Format("Physics is null"));
+				else
+					entity.Physics.Enabled = false;
 
-                        if ( cubeBlock.BlockDefinition.TypeId == typeof( MyObjectBuilder_Beacon ) )
-                        {
-                            Sandbox.ModAPI.Ingame.IMyBeacon beacon = (Sandbox.ModAPI.Ingame.IMyBeacon)cubeBlock;
-                            beacon.RequestEnable( true );
-                        }
-                    }
-                };*/
-
-            }
+			}
 			catch (Exception ex)
 			{
 				Logging.Instance.WriteLine(string.Format("HandleWaypointAdd(): {0}", ex.ToString()));					
@@ -219,8 +178,7 @@ namespace DedicatedEssentials
 						continue;
 
 					Logging.Instance.WriteLine(string.Format("Removing waypoint: {0}", name));
-				    entity.Close();
-				    /*
+
 					IMyCubeGrid grid = (IMyCubeGrid)entity;
 
 					if (grid.IsStatic)
@@ -239,9 +197,8 @@ namespace DedicatedEssentials
 						{
 							MyAPIGateway.Entities.RemoveEntity(entity);
 						});
-					    ClientWaypoints.Remove(entity.EntityId);
 					};
-					timer.Enabled = true;*/
+					timer.Enabled = true;
 				}
 
 				/*
@@ -333,8 +290,6 @@ namespace DedicatedEssentials
 
 					IMyCubeGrid grid = (IMyCubeGrid)entity;
 
-				    entity.Close();
-				    /*
 					if (grid.IsStatic)
 						grid.ConvertToDynamic();
 
@@ -351,10 +306,8 @@ namespace DedicatedEssentials
 						{
 							MyAPIGateway.Entities.RemoveEntity(entity);
 						});
-				    ClientWaypoints.Remove(entity.EntityId);
 					};
 					timer.Enabled = true;
-                    */
 				}
 			}
 			catch (Exception ex)
@@ -372,17 +325,14 @@ namespace DedicatedEssentials
 				if(identity.PlayerId == playerId)
 					continue;
 
-			    if (identity.DisplayName.Contains("Space Pirate"))
-			        return identity.PlayerId;
-			    /*
 				if((MyAPIGateway.Session.Player.GetRelationTo(identity.PlayerId) == MyRelationsBetweenPlayerAndBlock.Enemies || 
 				    MyAPIGateway.Session.Player.GetRelationTo(identity.PlayerId) == MyRelationsBetweenPlayerAndBlock.Neutral) &&
 				    MyAPIGateway.Session.Factions.TryGetPlayerFaction(identity.PlayerId) == null)
 				{
 					return identity.PlayerId;
-				}	*/
+				}				
 			}
-            /*
+
 			foreach (IMyIdentity identity in identities)
 			{
 				if (identity.PlayerId == playerId)
@@ -394,7 +344,7 @@ namespace DedicatedEssentials
 					return identity.PlayerId;
 				}
 			}
-            */
+
 			return 0;
 		}
 

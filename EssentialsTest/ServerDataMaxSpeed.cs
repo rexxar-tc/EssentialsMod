@@ -19,7 +19,7 @@ namespace DedicatedEssentials
 
         public override void HandleCommand( byte[ ] data )
         {
-            string text = Encoding.Unicode.GetString( data );
+            string text = Encoding.UTF8.GetString( data );
 
             float speed = MyAPIGateway.Utilities.SerializeFromXML<float>( text );
             if ( speed != 0f )
@@ -27,6 +27,10 @@ namespace DedicatedEssentials
                 Core.MaxSpeed = speed;
                 Core.SetMaxSpeed = true;
             }
+            else
+            {
+                Core.SetMaxSpeed = false;
+            }
         }
-    }    
+    }
 }

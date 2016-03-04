@@ -17,5 +17,19 @@ namespace DedicatedEssentials
 
 			return result.ToArray();
 		}
+
+	    public static bool CompareBytes(byte[] byteA, byte[] byteB)
+	    {
+	        if (byteA.Length != byteB.Length)
+	            return false;
+
+	        for (int i = 0; i < byteA.Length; ++i)
+	        {
+	            if (byteA[i] != byteB[i])
+	                return false;
+	        }
+
+	        return true;
+	    }
 	}
 }

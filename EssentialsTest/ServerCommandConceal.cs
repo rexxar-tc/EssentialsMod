@@ -10,6 +10,7 @@ using Sandbox.Common.ObjectBuilders;
 
 using VRageMath;
 using VRage;
+using VRage.Game;
 using VRage.ModAPI;
 
 namespace DedicatedEssentials

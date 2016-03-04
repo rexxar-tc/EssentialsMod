@@ -8,7 +8,7 @@ using Sandbox.ModAPI;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.ModAPI.Interfaces;
 using Sandbox.Definitions;
-
+using VRage.Game;
 using VRageMath;
 
 namespace DedicatedEssentials

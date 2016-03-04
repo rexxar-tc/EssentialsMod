@@ -8,6 +8,7 @@ using Sandbox.ModAPI;
 using Sandbox.Common.ObjectBuilders;
 using VRage.ModAPI;
 using DedicatedEssentials;
+using VRage.Game;
 using VRageMath;
 
 namespace DedicatedEssentials
@@ -74,9 +75,9 @@ namespace DedicatedEssentials
                     {
                         double distance = Math.Min(Math.Min(Core.ServerBorder - Math.Abs(position.X), Core.ServerBorder - Math.Abs(position.Y)), Core.ServerBorder - Math.Abs(position.Z));
                         if (distance >= 0d && distance < 1500d)
-                            Communication.Notification(string.Format("You are {0:F0}m from the border.  If you cross the border your ship may be removed.", distance), 280, Sandbox.Common.MyFontEnum.Red);
+                            Communication.Notification(string.Format("You are {0:F0}m from the border.  If you cross the border your ship may be removed.", distance), 280, MyFontEnum.Red);
                         else if(distance < 0d)
-                            Communication.Notification(string.Format("You have LEFT the game area.  If you do not return your ship may be removed! ({0:F0}m)", distance), 280, Sandbox.Common.MyFontEnum.Red);
+                            Communication.Notification(string.Format("You have LEFT the game area.  If you do not return your ship may be removed! ({0:F0}m)", distance), 280, MyFontEnum.Red);
                     }
                 }                
 			}

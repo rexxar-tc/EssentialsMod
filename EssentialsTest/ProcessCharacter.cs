@@ -11,11 +11,14 @@ using Sandbox.Definitions;
 
 using VRageMath;
 using Sandbox.Engine.Utils;
+using Sandbox.Engine.Voxels;
+using VRage.ModAPI;
 
 namespace DedicatedEssentials
 {
 	public class ProcessCharacter : SimulationProcessorBase
 	{
+        private bool hasrun = false;
         private DateTime m_lastRun = DateTime.Now;
         public override void Handle()
 		{
@@ -24,6 +27,11 @@ namespace DedicatedEssentials
 
             if (DateTime.Now - m_lastRun < TimeSpan.FromSeconds(5))
                 return;
+            if ( !hasrun )
+            {
+                hasrun = true;
+            }
+
 
             m_lastRun = DateTime.Now;
             if(MyAPIGateway.Session.Player.Controller != null && MyAPIGateway.Session.Player.Controller.ControlledEntity != null && MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity != null)

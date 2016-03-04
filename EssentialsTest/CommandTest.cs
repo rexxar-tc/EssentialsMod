@@ -9,6 +9,8 @@ using Sandbox.Common.ObjectBuilders;
 using VRageMath;
 using System.Runtime.InteropServices;
 using Sandbox.Definitions;
+using Sandbox.Graphics;
+using VRage.Game;
 using VRage.ModAPI;
 
 namespace DedicatedEssentials
@@ -54,7 +56,7 @@ namespace DedicatedEssentials
                     }
                     return;
                 }
-
+			        
                 if (words.Length > 0 && words[0] == "creative")
                 {
                     MyAPIGateway.Session.SessionSettings.GameMode = MyGameModeEnum.Creative;

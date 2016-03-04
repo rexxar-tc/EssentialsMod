@@ -20,7 +20,7 @@ namespace DedicatedEssentials
 
         public override void HandleCommand( byte[ ] data )
         {
-            string text = Encoding.Unicode.GetString( data );
+            string text = Encoding.UTF8.GetString( data );
 
             ServerMoveItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerMoveItem>( text );
             if ( item != null )
