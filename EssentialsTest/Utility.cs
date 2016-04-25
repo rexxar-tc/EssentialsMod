@@ -26,10 +26,10 @@ namespace DedicatedEssentials
 	        for (int i = 0; i < byteA.Length; ++i)
 	        {
 	            if (byteA[i] != byteB[i])
-	                return false;
+	                return true;
 	        }
 
-	        return true;
+	        return false;
 	    }
 	}
 }

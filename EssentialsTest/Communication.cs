@@ -74,16 +74,12 @@ namespace DedicatedEssentials
             item.message = text;
 
             string messageString = MyAPIGateway.Utilities.SerializeToXML<MessageRecieveItem>( item );
-            Logging.Instance.WriteLine( messageString );
-            /*byte[ ] data = new byte[messageString.Length];
+            byte[ ] data;
+            
+                data = Encoding.UTF8.GetBytes( messageString );
 
-            for ( int r = 0; r < messageString.Length; r++ )
-            {
-                data[r] = (byte)messageString[r];
-            }*/
-            byte[ ] data = Encoding.UTF8.GetBytes( messageString );
             MyAPIGateway.Multiplayer.SendMessageToServer(9001, data);
-            MyAPIGateway.Multiplayer.SendMessageToServer( 9003, data );
+            //MyAPIGateway.Multiplayer.SendMessageToServer( 9003, data );
         }
 
         public class MessageRecieveItem

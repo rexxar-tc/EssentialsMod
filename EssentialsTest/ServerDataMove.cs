@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
+using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
 
@@ -20,7 +21,9 @@ namespace DedicatedEssentials
 
         public override void HandleCommand( byte[ ] data )
         {
-            string text = Encoding.UTF8.GetString( data );
+            string text;
+
+                text = Encoding.UTF8.GetString( data );
 
             ServerMoveItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerMoveItem>( text );
             if ( item != null )

@@ -19,17 +19,19 @@ namespace DedicatedEssentials
 
         public override void HandleCommand( byte[ ] data )
         {
-            string text = Encoding.UTF8.GetString( data );
+            string text;
+
+                text = Encoding.UTF8.GetString( data );
 
             float speed = MyAPIGateway.Utilities.SerializeFromXML<float>( text );
             if ( speed != 0f )
             {
-                Core.MaxSpeed = speed;
-                Core.SetMaxSpeed = true;
+                EssentialsCore.MaxSpeed = speed;
+                EssentialsCore.SetMaxSpeed = true;
             }
             else
             {
-                Core.SetMaxSpeed = false;
+                EssentialsCore.SetMaxSpeed = false;
             }
         }
     }

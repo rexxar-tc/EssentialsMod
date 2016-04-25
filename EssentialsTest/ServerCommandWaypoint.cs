@@ -13,6 +13,7 @@ using VRage;
 using VRage.ModAPI;
 using System.Timers;
 using VRage.Game;
+using VRage.Game.ModAPI;
 
 namespace DedicatedEssentials
 {

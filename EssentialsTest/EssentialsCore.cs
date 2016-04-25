@@ -1,28 +1,22 @@
-﻿using System;
-using System.Collections;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sandbox.Common;
 using Sandbox.ModAPI;
-using Sandbox.Definitions;
-using VRage.Game.Components;
-using VRage.Input;
-using VRage.ModAPI;
-//using Sandbox.ModAPI.Ingame;
-using DedicatedEssentials;
-using Sandbox.Game.GameSystems;
-using Sandbox.Graphics;
-using VRage;
 using VRage.Game;
+using VRage.Game.Components;
+using VRage.Game.ModAPI;
+using VRage.ModAPI;
 using VRageMath;
 
 namespace DedicatedEssentials
 {
     [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation | MyUpdateOrder.AfterSimulation | MyUpdateOrder.Simulation)]
-    public class Core : MySessionComponentBase
+    public class EssentialsCore : MySessionComponentBase
     {
         // Declarations
-        private static string version = "v0.1.1.1";
+        private static string version = "v0.1.2.1";
         private static bool m_debug = false;
 		private static bool m_showPosition = false;
 		private static string m_serverName = "";
@@ -37,7 +31,8 @@ namespace DedicatedEssentials
         private List<CommandHandlerBase> m_chatHandlers = new List<CommandHandlerBase>();
         private List<SimulationProcessorBase> m_simHandlers = new List<SimulationProcessorBase>();
 		private List<ServerDataHandlerBase> m_dataHandlers = new List<ServerDataHandlerBase>();
-                
+        public Random random = new Random();
+
         // Properties
         public static bool Debug
         {
@@ -58,14 +53,14 @@ namespace DedicatedEssentials
 
 		public static string ServerName
 		{
-			get { return Core.m_serverName; }
-			set { Core.m_serverName = value; }
+			get { return EssentialsCore.m_serverName; }
+			set { EssentialsCore.m_serverName = value; }
 		}
 
         public static float ServerBorder
         {
-            get { return Core.m_serverBorder; }
-            set { Core.m_serverBorder = value; }
+            get { return EssentialsCore.m_serverBorder; }
+            set { EssentialsCore.m_serverBorder = value; }
         }
 
         public static string Join
@@ -218,7 +213,6 @@ namespace DedicatedEssentials
                     sendToOthers = false;
                     Communication.Message(MyAPIGateway.Session.Player.DisplayName, messageText);
                     Logging.Instance.WriteLine( "Command entered: " + messageText );
-                    return;
                 }
             }
             catch (Exception ex)
@@ -232,6 +226,7 @@ namespace DedicatedEssentials
             if (MyAPIGateway.Multiplayer.IsServer)
                 return;
 
+            /*
             //look for duplicate messages coming within 200ms of each other
 		    if (DateTime.Now - _lastMessageTime < TimeSpan.FromMilliseconds(200))
 		    {
@@ -248,6 +243,7 @@ namespace DedicatedEssentials
             //because steam
 		    _lastMessageTime = DateTime.Now;
 		    _lastMessageBytes = data;
+            */
 
 			Logging.Instance.WriteLine(string.Format("Received Server Data: {0} bytes", data.Length));
 			foreach (ServerDataHandlerBase handler in m_dataHandlers)
@@ -285,11 +281,12 @@ namespace DedicatedEssentials
         {
 			try
 			{
+
 				if (MyAPIGateway.Session == null)
 					return;
-
-			    if(drawLines)
-                    DrawLines();
+                
+			 //if(drawLines)
+                 DrawLines();
 
                 // Run the init
                 if ( !m_initialized)
@@ -349,7 +346,7 @@ namespace DedicatedEssentials
        
         private void DrawLines()
         {
-            foreach ( var line in PointsList )
+           foreach ( var line in PointsList )
             {
                 Vector4 color = Color.LemonChiffon.ToVector4( );
                 MySimpleObjectDraw.DrawLine( line.startPoint, line.endPoint, "WeaponLaserIgnoreDepth", ref color, 1f );

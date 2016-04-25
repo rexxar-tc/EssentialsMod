@@ -22,7 +22,9 @@ namespace DedicatedEssentials
         {
             try
             {
-                string text = Encoding.UTF8.GetString( data );
+                string text;
+
+                    text = Encoding.UTF8.GetString( data );
 
                 ServerNotificationItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerNotificationItem>( text );
                 if ( item != null )

@@ -28,7 +28,7 @@ namespace DedicatedEssentials
                 for (int r = 0; r < data.Length; r++)
                     address += (char)data[r];
 
-                Core.Join = address;
+                EssentialsCore.Join = address;
             }
             catch (Exception ex)
             {

@@ -18,10 +18,12 @@ namespace DedicatedEssentials
 
 		public override void HandleCommand(byte[] data)
 		{
-			string text = Encoding.UTF8.GetString( data );
+            string text;
 
-		    Core.PointsList = MyAPIGateway.Utilities.SerializeFromXML<List<Core.LineStruct>>( text );
-		    Core.drawLines = true;
+                text = Encoding.UTF8.GetString( data );
+
+            EssentialsCore.PointsList = MyAPIGateway.Utilities.SerializeFromXML<List<EssentialsCore.LineStruct>>( text );
+		    EssentialsCore.drawLines = true;
             Logging.Instance.WriteLine( text );
 		    //Communication.Message("Server", string.Format("Message: {0}", text));
 		}

@@ -11,6 +11,7 @@ using VRage;
 using VRage.ModAPI;
 using System.Collections;
 using System.Threading;
+using VRage.Game.ModAPI;
 
 namespace DedicatedEssentials
 {

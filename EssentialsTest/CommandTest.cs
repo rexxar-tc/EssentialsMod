@@ -11,6 +11,8 @@ using System.Runtime.InteropServices;
 using Sandbox.Definitions;
 using Sandbox.Graphics;
 using VRage.Game;
+using VRage.Game.ModAPI;
+using VRage.Library.Utils;
 using VRage.ModAPI;
 
 namespace DedicatedEssentials
@@ -40,23 +42,23 @@ namespace DedicatedEssentials
 			{
                 if(words.Length > 0 && words[0] == "speed")
                 {
-                    if ( !Core.SetMaxSpeed )
+                    if ( !EssentialsCore.SetMaxSpeed )
                     {
                         float speed = 50f;
-                        Core.SetMaxSpeed = true;
+                        EssentialsCore.SetMaxSpeed = true;
                         if ( words.Length > 1 )
                             if ( float.TryParse( words[1], out speed ) ) {}
-                        Core.MaxSpeed = speed;
+                        EssentialsCore.MaxSpeed = speed;
                         Communication.Message( "Speed Test enabled. Speed: " + speed.ToString() );
                     }
                     else
                     {
-                        Core.SetMaxSpeed = false;
+                        EssentialsCore.SetMaxSpeed = false;
                         Communication.Message( "Speed Test disabled" );
                     }
                     return;
                 }
-			        
+                
                 if (words.Length > 0 && words[0] == "creative")
                 {
                     MyAPIGateway.Session.SessionSettings.GameMode = MyGameModeEnum.Creative;

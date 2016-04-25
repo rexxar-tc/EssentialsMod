@@ -18,9 +18,11 @@ namespace DedicatedEssentials
 
 		public override void HandleCommand(byte[] data)
 		{
-            string text = Encoding.UTF8.GetString( data );
+            string text;
 
-			ServerMessageItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerMessageItem>(text);
+                text = Encoding.UTF8.GetString( data );
+
+            ServerMessageItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerMessageItem>(text);
 			if (item != null)
 				Communication.Message(item.From, item.Message);
 		}

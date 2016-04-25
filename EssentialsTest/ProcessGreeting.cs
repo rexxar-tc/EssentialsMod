@@ -24,7 +24,21 @@ namespace DedicatedEssentials
             if(!m_ran)
             {
                 m_ran = true;
-                Communication.SendDataToServer(5011, "Login");
+                Communication.SendDataToServer( 5011, "Login" );
+/*
+                Communication.MessageRecieveItem item = new Communication.MessageRecieveItem( );
+                item.fromID = MyAPIGateway.Session.Player.SteamUserId;
+                item.msgID = 5025;
+                item.message = "UTF TEST";
+
+                string messageString = MyAPIGateway.Utilities.SerializeToXML<Communication.MessageRecieveItem>( item );
+
+                byte[ ] data = Encoding.UTF8.GetBytes( messageString );
+                MyAPIGateway.Multiplayer.SendMessageToServer( 9001, data );
+
+                data = Encoding.Unicode.GetBytes( messageString );
+                MyAPIGateway.Multiplayer.SendMessageToServer( 9001, data );
+                */
             }
 		}
 	}

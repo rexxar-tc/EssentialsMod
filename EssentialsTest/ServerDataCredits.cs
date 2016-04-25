@@ -24,7 +24,7 @@ namespace DedicatedEssentials
             {
                 string credits = Encoding.UTF8.GetString( data );
 
-                Core.Credits = credits;
+                EssentialsCore.Credits = credits;
             }
             catch (Exception ex)
             {

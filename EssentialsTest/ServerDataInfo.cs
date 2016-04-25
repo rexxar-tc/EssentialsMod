@@ -18,6 +18,9 @@ namespace DedicatedEssentials
 
         public override void HandleCommand( byte[ ] data )
         {
+            //string text = Encoding.UTF8.GetString( data );
+
+            //if ( text == "UTF MESSAGE" )
             //ulong steamId = (ulong)((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + (data[3]));
             //if ( BitConverter.ToUInt64( data, 0 ) == MyAPIGateway.Session.Player.SteamUserId )
         }

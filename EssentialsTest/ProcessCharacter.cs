@@ -12,6 +12,7 @@ using Sandbox.Definitions;
 using VRageMath;
 using Sandbox.Engine.Utils;
 using Sandbox.Engine.Voxels;
+using VRage.Game.ModAPI;
 using VRage.ModAPI;
 
 namespace DedicatedEssentials

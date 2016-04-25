@@ -10,6 +10,7 @@ using VRage.ModAPI;
 using System.IO;
 using Sandbox;
 using VRage.Game;
+using VRage.Game.ModAPI;
 
 namespace DedicatedEssentials
 {
@@ -71,7 +72,7 @@ namespace DedicatedEssentials
 		private void Init()
 		{
 			HashSet<IMyEntity> entities = new HashSet<IMyEntity>();
-			Core.ServerCommandList.Clear();
+			EssentialsCore.ServerCommandList.Clear();
 			MyAPIGateway.Entities.GetEntities(entities, x => x is IMyCubeGrid && x.DisplayName.StartsWith(string.Format("CommRelayGlobal")));
 			foreach (IMyEntity entity in entities)
 			{
@@ -86,7 +87,7 @@ namespace DedicatedEssentials
 						foreach (string str in beacon.CustomName.Split(new char[] { '\n' }))
 						{
                             if (str[0] == '/')
-                                Core.ServerCommandList.Add(str);
+                                EssentialsCore.ServerCommandList.Add(str);
 
                             else
                                 ParseGlobal(str);
@@ -107,18 +108,18 @@ namespace DedicatedEssentials
 			if(data.ToLower().StartsWith("servername:"))
 			{
 				string[] split = data.Split(new char[] { ':' });
-				Core.ServerName = split[1];
+				EssentialsCore.ServerName = split[1];
 			}
 
             if(data.ToLower().StartsWith("border:"))
             {
                 string[] split = data.Split(new char[] { ':' });
-                Core.ServerBorder = 0f;
+                EssentialsCore.ServerBorder = 0f;
                 float val = 0f;
                 float.TryParse(split[1], out val);
-                Core.ServerBorder = val * 1000f;
+                EssentialsCore.ServerBorder = val * 1000f;
 
-                Logging.Instance.WriteLine(string.Format("Border: {0}", Core.ServerBorder));
+                Logging.Instance.WriteLine(string.Format("Border: {0}", EssentialsCore.ServerBorder));
             }
 		}
     }

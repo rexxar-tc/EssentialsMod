@@ -21,9 +21,9 @@ namespace DedicatedEssentials
 
 		public override void HandleCommand(String[] words)
 		{
-			Core.ShowPosition = !Core.ShowPosition;
-			Communication.Message(string.Format("Show Position setting: {0}", Core.ShowPosition));
-            if (!Core.ShowPosition)
+			EssentialsCore.ShowPosition = !EssentialsCore.ShowPosition;
+			Communication.Message(string.Format("Show Position setting: {0}", EssentialsCore.ShowPosition));
+            if (!EssentialsCore.ShowPosition)
             {
                 MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Clear();
                 MyAPIGateway.Utilities.GetObjectiveLine().Hide();

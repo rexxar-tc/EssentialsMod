@@ -61,7 +61,7 @@ namespace DedicatedEssentials
                     m_writer.WriteLine(m_cache);
 
                 m_cache.Clear();
-                m_cache.Append(DateTime.Now.ToString("[HH:mm:ss] "));
+                m_cache.Append(DateTime.Now.ToString("[HH:mm:ss:ffff] "));
                 for (int i = 0; i < m_indent; i++)
                     m_cache.Append("\t");
 

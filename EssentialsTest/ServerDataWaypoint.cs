@@ -13,6 +13,7 @@ using VRage;
 using VRage.Game;
 using VRage.ModAPI;
 using System.Timers;
+using VRage.Game.ModAPI;
 
 namespace DedicatedEssentials
 {    
@@ -47,7 +48,9 @@ namespace DedicatedEssentials
 		// /waypoint remove "name"
 		public override void HandleCommand(byte[] data)
 		{
-            string text = Encoding.UTF8.GetString( data );
+            string text;
+
+                text = Encoding.UTF8.GetString( data );
 
             //string[ ] words = text.Split( new string[ ] { " " }, StringSplitOptions.RemoveEmptyEntries );
 

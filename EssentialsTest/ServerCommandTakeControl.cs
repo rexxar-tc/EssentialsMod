@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Sandbox.Common;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using Sandbox.ModAPI.Interfaces;
+using VRage.Game.ModAPI;
 using VRage.ModAPI;
 
 namespace DedicatedEssentials
@@ -34,9 +36,9 @@ namespace DedicatedEssentials
 				{
 					//MyAPIGateway.Session.Player.Controller.TakeControl((IMyControllableEntity)entity);
 					
-					IMyControllableEntity controllable = (IMyControllableEntity)entity;
-					controllable.Use();
-					IMyControllerInfo info = (IMyControllerInfo)entity;
+					//IMyControllableEntity controllable = (IMyControllableEntity)entity;
+					//controllable.Use();
+					//IMyControllerInfo info = (IMyControllerInfo)entity;
 					
 				}
 			}

@@ -31,34 +31,34 @@ namespace DedicatedEssentials
 				Init();
 			}
             
-            if(!m_clear && !Core.ShowPosition)
+            if(!m_clear && !EssentialsCore.ShowPosition)
             {
                 m_clear = true;
                 MyAPIGateway.Utilities.GetObjectiveLine().Objectives.Clear();
                 MyAPIGateway.Utilities.GetObjectiveLine().Hide();
             }
 
-            if (Core.SetMaxSpeed)
+            if (EssentialsCore.SetMaxSpeed)
                 ProcessMaxSpeed();
 
 			if (DateTime.Now - m_lastRun < TimeSpan.FromMilliseconds(300))
 				return;
 
 			m_lastRun = DateTime.Now;
-			if (MyAPIGateway.Utilities.GetObjectiveLine().Visible && Core.ShowPosition)
+			if (MyAPIGateway.Utilities.GetObjectiveLine().Visible && EssentialsCore.ShowPosition)
 			{
 				if(MyAPIGateway.Session.Player.Controller == null || MyAPIGateway.Session.Player.Controller.ControlledEntity == null || MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity == null)
 					return;
 
 				Vector3D position = MyAPIGateway.Session.Player.Controller.ControlledEntity.Entity.GetPosition();
-				if (MyAPIGateway.Utilities.GetObjectiveLine().Title != Core.ServerName)
-					MyAPIGateway.Utilities.GetObjectiveLine().Title = Core.ServerName;
+				if (MyAPIGateway.Utilities.GetObjectiveLine().Title != EssentialsCore.ServerName)
+					MyAPIGateway.Utilities.GetObjectiveLine().Title = EssentialsCore.ServerName;
 
                 //if (MyAPIGateway.Session != null && MyAPIGateway.Session.Name.Contains("Transcend"))
                 //{
                     string serverSpeed = "";
-                    if (Core.ServerSpeed != "")
-                        serverSpeed = " - SRT: " + Core.ServerSpeed;
+                    if (EssentialsCore.ServerSpeed != "")
+                        serverSpeed = " - SRT: " + EssentialsCore.ServerSpeed;
 
                     MyAPIGateway.Utilities.GetObjectiveLine().Objectives[0] = string.Format("[X: {0:F0} Y: {1:F0} Z: {2:F0}]{3}", position.X, position.Y, position.Z, serverSpeed);
                 //}
@@ -67,13 +67,13 @@ namespace DedicatedEssentials
                 //      MyAPIGateway.Utilities.GetObjectiveLine().Objectives[0] = string.Format("Position: X: {0:F0} Y: {1:F0} Z: {2:F0}", position.X, position.Y, position.Z);
                 //}
 
-                if (Core.ServerBorder >= 20000f)
+                if (EssentialsCore.ServerBorder >= 20000f)
                 {
-                    if (Math.Abs(position.X) >= Core.ServerBorder - 1500 ||
-                        Math.Abs(position.Y) >= Core.ServerBorder - 1500 ||
-                        Math.Abs(position.Z) >= Core.ServerBorder - 1500)
+                    if (Math.Abs(position.X) >= EssentialsCore.ServerBorder - 1500 ||
+                        Math.Abs(position.Y) >= EssentialsCore.ServerBorder - 1500 ||
+                        Math.Abs(position.Z) >= EssentialsCore.ServerBorder - 1500)
                     {
-                        double distance = Math.Min(Math.Min(Core.ServerBorder - Math.Abs(position.X), Core.ServerBorder - Math.Abs(position.Y)), Core.ServerBorder - Math.Abs(position.Z));
+                        double distance = Math.Min(Math.Min(EssentialsCore.ServerBorder - Math.Abs(position.X), EssentialsCore.ServerBorder - Math.Abs(position.Y)), EssentialsCore.ServerBorder - Math.Abs(position.Z));
                         if (distance >= 0d && distance < 1500d)
                             Communication.Notification(string.Format("You are {0:F0}m from the border.  If you cross the border your ship may be removed.", distance), 280, MyFontEnum.Red);
                         else if(distance < 0d)
@@ -112,9 +112,9 @@ namespace DedicatedEssentials
                 return;
             }
 
-            if (entity.Physics.LinearVelocity.Length() > Core.MaxSpeed)
+            if (entity.Physics.LinearVelocity.Length() > EssentialsCore.MaxSpeed)
             {
-                entity.Physics.LinearVelocity = entity.Physics.LinearVelocity * (Core.MaxSpeed / entity.Physics.LinearVelocity.Length());
+                entity.Physics.LinearVelocity = entity.Physics.LinearVelocity * (EssentialsCore.MaxSpeed / entity.Physics.LinearVelocity.Length());
             }
         }
 

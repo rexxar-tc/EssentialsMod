@@ -26,7 +26,7 @@ namespace DedicatedEssentials
 
                 string serverSpeed = Encoding.UTF8.GetString( data );
 
-                Core.ServerSpeed = serverSpeed;
+                EssentialsCore.ServerSpeed = serverSpeed;
             }
             catch (Exception ex)
             {
