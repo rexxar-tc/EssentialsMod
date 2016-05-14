@@ -13,6 +13,7 @@ using VRage;
 using VRage.Game;
 using VRage.ModAPI;
 using System.Timers;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 
 namespace DedicatedEssentials
@@ -177,6 +178,9 @@ namespace DedicatedEssentials
                 entity.Flags &= ~EntityFlags.Visible;
                 entity.Flags &= ~EntityFlags.Sync;
                 entity.Flags &= ~EntityFlags.Save;
+
+                //TODO: Make sure this works
+			    //((MyEntity)entity).IsPreview = true;
 
                 ClientWaypoints.Add( entity.EntityId );
                 MyAPIGateway.Entities.AddEntity( entity, true );

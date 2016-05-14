@@ -21,9 +21,7 @@ namespace DedicatedEssentials
             string text;
 
                 text = Encoding.UTF8.GetString( data );
-
-            EssentialsCore.PointsList = MyAPIGateway.Utilities.SerializeFromXML<List<EssentialsCore.LineStruct>>( text );
-		    EssentialsCore.drawLines = true;
+            
             Logging.Instance.WriteLine( text );
 		    //Communication.Message("Server", string.Format("Message: {0}", text));
 		}

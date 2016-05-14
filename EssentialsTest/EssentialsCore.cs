@@ -30,7 +30,7 @@ namespace DedicatedEssentials
         private bool m_initialized = false;
         private List<CommandHandlerBase> m_chatHandlers = new List<CommandHandlerBase>();
         private List<SimulationProcessorBase> m_simHandlers = new List<SimulationProcessorBase>();
-		private List<ServerDataHandlerBase> m_dataHandlers = new List<ServerDataHandlerBase>();
+		private static List<ServerDataHandlerBase> m_dataHandlers = new List<ServerDataHandlerBase>();
         public Random random = new Random();
 
         // Properties
@@ -84,14 +84,7 @@ namespace DedicatedEssentials
         public static string Credits { get; set; }
 
         public static string ServerSpeed { get; set; }
-
-        private static DateTime _lastMessageTime = DateTime.Now;
-        private static byte[] _lastMessageBytes;
-
-        public static bool drawLines;
-        public static HashSet<MyOrientedBoundingBoxD>  boxes = new HashSet<MyOrientedBoundingBoxD>();
-        public static List<LineStruct> PointsList = new List<LineStruct>();
-
+        
         // Initializers
         private void Initialize()
         {
@@ -112,6 +105,7 @@ namespace DedicatedEssentials
 			m_simHandlers.Add(new ProcessDetection());
             m_simHandlers.Add(new ProcessLogin());
             m_simHandlers.Add(new ProcessCharacter());
+            m_simHandlers.Add( new ProcessToolbar() );
 
             // Server Command Handlers
             ServerCommandHandlers.ServerCommands.Add(new ServerCommandMessage());
@@ -138,6 +132,7 @@ namespace DedicatedEssentials
             m_dataHandlers.Add(new ServerDataMaxSpeed());
             m_dataHandlers.Add(new ServerDataInfo());
             m_dataHandlers.Add(new ServerDataWaypoint());
+            m_dataHandlers.Add( new ServerDataToolbar() );
 
             // Setup Grid Tracker
             //CubeGridTracker.SetupGridTracking();
@@ -221,29 +216,10 @@ namespace DedicatedEssentials
             }
         }
 
-		public void HandleServerData(byte[] data)
+		public static void HandleServerData(byte[] data)
 		{
             if (MyAPIGateway.Multiplayer.IsServer)
                 return;
-
-            /*
-            //look for duplicate messages coming within 200ms of each other
-		    if (DateTime.Now - _lastMessageTime < TimeSpan.FromMilliseconds(200))
-		    {
-		        if(Utility.CompareBytes(data, _lastMessageBytes))
-		        {
-		            //we received a duplicate message, ignore it and print info to log
-		            _lastMessageTime = DateTime.Now;
-                    Logging.Instance.WriteLine("Received duplicate message from server.");
-		            return;
-		        }
-		    }
-
-            //store the current message and its time so we can check for duplicate messages
-            //because steam
-		    _lastMessageTime = DateTime.Now;
-		    _lastMessageBytes = data;
-            */
 
 			Logging.Instance.WriteLine(string.Format("Received Server Data: {0} bytes", data.Length));
 			foreach (ServerDataHandlerBase handler in m_dataHandlers)
@@ -268,13 +244,15 @@ namespace DedicatedEssentials
         {
             MyAPIGateway.Utilities.MessageEntered += HandleMessageEntered;
 			MyAPIGateway.Multiplayer.RegisterMessageHandler(9000, HandleServerData);
+            MyAPIGateway.Multiplayer.RegisterMessageHandler( 9006, Communication.ReveiveMessageParts );
         }
 
         public void RemoveMessageHandler()
         {
             MyAPIGateway.Utilities.MessageEntered -= HandleMessageEntered;
 			MyAPIGateway.Multiplayer.UnregisterMessageHandler(9000, HandleServerData);
-		}
+            MyAPIGateway.Multiplayer.UnregisterMessageHandler(9006, Communication.ReveiveMessageParts);
+        }
 
         // Overrides
         public override void UpdateBeforeSimulation()
@@ -285,9 +263,6 @@ namespace DedicatedEssentials
 				if (MyAPIGateway.Session == null)
 					return;
                 
-			 //if(drawLines)
-                 DrawLines();
-
                 // Run the init
                 if ( !m_initialized)
 				{
@@ -342,25 +317,6 @@ namespace DedicatedEssentials
             catch { }
 
             base.UnloadData();
-        }
-       
-        private void DrawLines()
-        {
-           foreach ( var line in PointsList )
-            {
-                Vector4 color = Color.LemonChiffon.ToVector4( );
-                MySimpleObjectDraw.DrawLine( line.startPoint, line.endPoint, "WeaponLaserIgnoreDepth", ref color, 1f );
-            }
-        }
-        public struct LineStruct
-        {
-            public LineStruct( Vector3D start, Vector3D end )
-            {
-                startPoint = start;
-                endPoint = end;
-            }
-            public Vector3D startPoint;
-            public Vector3D endPoint;
         }
     }
 }
