@@ -1,11 +1,5 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Sandbox.ModAPI;
-using Sandbox.ModAPI.Interfaces;
-using VRageMath;
 
 namespace DedicatedEssentials
 {
@@ -18,13 +12,20 @@ namespace DedicatedEssentials
 
 		public override void HandleCommand(byte[] data)
 		{
-            string text;
-
-                text = Encoding.UTF8.GetString( data );
+            string text = Encoding.UTF8.GetString( data );
 
             ServerMessageItem item = MyAPIGateway.Utilities.SerializeFromXML<ServerMessageItem>(text);
-			if (item != null)
-				Communication.Message(item.From, item.Message);
+		    Logging.Instance.WriteLine( text );
+		    if ( item != null )
+		    {
+		        Communication.Message(item.From, item.Message);
+		        if ( item.Message.StartsWith( "GPS" ) )
+		        {
+		            var gps = Utility.ParseGps( item.Message );
+		            if ( gps != null )
+		                MyAPIGateway.Session.GPS.AddGps( MyAPIGateway.Session.Player.IdentityId, gps );
+		        }
+		    }
 		}
 	}
 

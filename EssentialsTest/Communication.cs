@@ -1,147 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sandbox.ModAPI;
-using Sandbox.Common.ObjectBuilders;
-using VRageMath;
-using VRage.ObjectBuilders;
-using VRage;
-using Sandbox.Common;
 using System.Text;
+using Sandbox.ModAPI;
 using VRage.Game;
-using VRage.Library.Collections;
 
 namespace DedicatedEssentials
 {
     public static class Communication
     {
-        static public void Message(string text)
+        private static Random _random = new Random();
+        public static void Message( string text )
         {
-            MyAPIGateway.Utilities.ShowMessage("[Essentials]", text);
+            MyAPIGateway.Utilities.ShowMessage( "[Essentials]", text );
         }
 
-		static public void Message(string from, string text, bool brackets = true)
-		{
-			MyAPIGateway.Utilities.ShowMessage(string.Format("{0}", from), text);
-		}
+        public static void Message( string from, string text, bool brackets = true )
+        {
+            MyAPIGateway.Utilities.ShowMessage( from, text );
+        }
 
-        static public void Notification(string text, int disappearTimeMS = 2000, MyFontEnum fontEnum = MyFontEnum.White)
+        public static void Notification( string text, int disappearTimeMS = 2000, MyFontEnum fontEnum = MyFontEnum.White )
         {
             if ( disappearTimeMS > 0 )
-                MyAPIGateway.Utilities.ShowNotification(text, disappearTimeMS, fontEnum);
+                MyAPIGateway.Utilities.ShowNotification( text, disappearTimeMS, fontEnum );
         }
 
-		static public void Dialog(string title, string prefix, string current, string description, string buttonText)
-		{
-			MyAPIGateway.Utilities.ShowMissionScreen(title, prefix, current, description, null, buttonText);
-		}
-        
-		public static void SendDataToServer(long dataId, string text)
-		{
-            /* Let's try something else instead...
-			string msgIdString = dataId.ToString();
-            string steamIdString = MyAPIGateway.Session.Player.SteamUserId.ToString();
+        public static void Dialog( string title, string prefix, string current, string description, string buttonText )
+        {
+            MyAPIGateway.Utilities.ShowMissionScreen( title, prefix, current, description, null, buttonText );
+        }
 
-			byte[] data = System.Text.Encoding.ASCII.GetBytes(text);
-			byte[] newData = new byte[text.Length + 1 + msgIdString.Length + steamIdString.Length + 1];
+        public static void SendDataToServer( long dataId, string text )
+        {
+            var item = new MessageRecieveItem
+                       {
+                           fromID = MyAPIGateway.Session.Player.SteamUserId,
+                           msgID = dataId,
+                           message = text
+                       };
+            //hash a random long with the current time and steamID to make a decent quality guid for each message
+            byte[] randLong = new byte[sizeof(long)];
+            _random.NextBytes(randLong);
+            long uniqueId = 23;
+            uniqueId = uniqueId * 37 + BitConverter.ToInt64(randLong, 0);
+            uniqueId = uniqueId * 37 + DateTime.Now.GetHashCode();
+            uniqueId = uniqueId * 37 + MyAPIGateway.Session.Player.SteamUserId.GetHashCode();
 
-            int pos = 0;
-			newData[pos] = (byte)msgIdString.Length;
-            for (int r = 0; r < msgIdString.Length; r++)
-            {
-                pos++;
-                newData[pos] = (byte)msgIdString[r];
-            }
-            pos++;
+            string messageString = MyAPIGateway.Utilities.SerializeToXML( item );
+            byte[] messageBytes = Encoding.UTF8.GetBytes( messageString );
+            byte[] data = new byte[messageBytes.Length + sizeof(long)];
+            BitConverter.GetBytes( uniqueId ).CopyTo( data, 0 );
+            messageBytes.CopyTo( data, sizeof(long) );
 
-            newData[pos] = (byte)steamIdString.Length;
-            for (int r = 0; r < steamIdString.Length; r++ )
-            {
-                pos++;
-                newData[pos] = (byte)steamIdString[r];
-            }
-            pos++;
-
-            Array.Copy(data, 0, newData, pos, data.Length);*/
-
-            MessageRecieveItem item = new MessageRecieveItem( );
-            item.fromID = MyAPIGateway.Session.Player.SteamUserId;
-            item.msgID = dataId;
-            item.message = text;
-
-            string messageString = MyAPIGateway.Utilities.SerializeToXML<MessageRecieveItem>( item );
-            byte[ ] data = Encoding.UTF8.GetBytes( messageString );
-
-            MyAPIGateway.Multiplayer.SendMessageToServer(9001, data);
+            MyAPIGateway.Multiplayer.SendMessageToServer( 9001, data );
             //MyAPIGateway.Multiplayer.SendMessageToServer( 9003, data );
         }
 
         public static void SendMessageParts( long dataId, byte[] data )
         {
-            List<byte> byteList = data.ToList();
-            while ( byteList.Count>0 )
-            {
-                int count = Math.Min( byteList.Count, 3500 );
-                byte[] dataPart = byteList.GetRange( 0, count ).ToArray();
-                byteList.RemoveRange( 0, count );
-
-                var partItem = new MessagePartItem
-                {
-                    DataId = dataId,
-                    Data = dataPart,
-                    LastPart = byteList.Count == 0
-                };
-
-                var message = MyAPIGateway.Utilities.SerializeToXML( partItem );
-                var outData = Encoding.UTF8.GetBytes( message );
-
-                MyAPIGateway.Multiplayer.SendMessageToServer( 9005, outData );
-            }
         }
 
-        private static List<MessagePartItem> receiveParts = new List<MessagePartItem>();
-
-        public static void ReveiveMessageParts( byte[] data )
+        public static void ReceiveMessageParts( byte[] data )
         {
-            var message = Encoding.UTF8.GetString( data );
-            var item = MyAPIGateway.Utilities.SerializeFromXML<MessagePartItem>(message);
-
-            receiveParts.Add( item );
-
-            if ( !item.LastPart )
+            byte[] message = Desegment( data );
+            
+            if(message == null)
                 return;
 
-            List<byte> bytesList = new List<byte>();
-            foreach ( var part in receiveParts )
-            {
-                foreach( var dataByte in part.Data)
-                    bytesList.Add( dataByte );
-            }
-
-            EssentialsCore.HandleServerData( bytesList.ToArray() );
+            EssentialsCore.HandleServerData( message );
         }
-
-        public class MessagePartItem
-        {
-            public long DataId;
-            public bool LastPart;
-            public byte[] Data;
-        }
-
+        
         public class MessageRecieveItem
         {
-            public ulong fromID
-            {
-                get; set;
-            }
-            public long msgID
-            {
-                get; set;
-            }
-            public string message
-            {
-                get; set;
-            }
+            public ulong fromID { get; set; }
+            public long msgID { get; set; }
+            public string message { get; set; }
         }
 
         public class ServerDialogItem
@@ -184,6 +118,118 @@ namespace DedicatedEssentials
             Notification,
             MaxSpeed,
             ServerInfo
-        }        
+        }
+        private static Dictionary<int, PartialMessage> messages = new Dictionary<int, PartialMessage>();
+    private const int PACKET_SIZE = 4096;
+    private const int META_SIZE = sizeof(int) * 2;
+    private const int DATA_LENGTH = PACKET_SIZE - META_SIZE;
+ 
+    /// <summary>
+    /// Segments a byte array.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static List<byte[]> Segment(byte[] message)
+    {
+        var hash = BitConverter.GetBytes(message.GetHashCode());
+        var packets = new List<byte[]>();
+        int msgIndex = 0;
+ 
+        int packetId = message.Length / DATA_LENGTH;
+ 
+        while (packetId >= 0)
+        {
+            var id = BitConverter.GetBytes(packetId);
+            byte[] segment;
+ 
+            if (message.Length - msgIndex > DATA_LENGTH)
+            {
+                segment = new byte[PACKET_SIZE];
+            }
+            else
+            {
+                segment = new byte[META_SIZE + message.Length - msgIndex];
+            }
+ 
+            //Copy packet "header" data.
+            Array.Copy(hash, segment, hash.Length);
+            Array.Copy(id, 0, segment, hash.Length, id.Length);
+ 
+            //Copy segment of original message.
+            Array.Copy(message, msgIndex, segment, META_SIZE, segment.Length - META_SIZE);
+ 
+            packets.Add(segment);
+            msgIndex += DATA_LENGTH;
+            packetId--;
+        }
+ 
+        return packets;
+    }
+ 
+    /// <summary>
+    /// Reassembles a segmented byte array.
+    /// </summary>
+    /// <param name="packet">Array segment.</param>
+    /// <param name="message">Full array, null if incomplete.</param>
+    /// <returns>Message fully desegmented, "message" is assigned.</returns>
+    public static byte[] Desegment(byte[] packet)
+    {
+        int hash = BitConverter.ToInt32(packet, 0);
+        int packetId = BitConverter.ToInt32(packet, sizeof(int));
+        byte[] dataBytes = new byte[packet.Length - META_SIZE];
+        Array.Copy(packet, META_SIZE, dataBytes, 0, packet.Length - META_SIZE);
+ 
+        if (!messages.ContainsKey(hash))
+        {
+            if (packetId == 0)
+            {
+                return dataBytes;
+            }
+            else
+            {
+                messages.Add(hash, new PartialMessage(packetId));
+            }
+        }
+ 
+        var message = messages[hash];
+        message.WritePart(packetId, dataBytes);
+ 
+        if (message.IsComplete)
+        {
+            messages.Remove(hash);
+            return message.Data;
+        }
+ 
+        return null;
+    }
+ 
+    private class PartialMessage
+    {
+        public byte[] Data;
+        private HashSet<int> receivedPackets = new HashSet<int>();
+        private readonly int MaxId;
+        public bool IsComplete { get { return receivedPackets.Count == MaxId + 1; } }
+ 
+ 
+        public PartialMessage(int startId)
+        {
+            MaxId = startId;
+            Data = new byte[0];
+        }
+ 
+        public void WritePart(int id, byte[] data)
+        {
+            int index = MaxId - id;
+            int requiredLength = (index * DATA_LENGTH) + data.Length;
+ 
+            if (Data.Length < requiredLength)
+            {
+                Array.Resize(ref Data, requiredLength);
+            }
+ 
+            Array.Copy(data, 0, Data, index * DATA_LENGTH, data.Length);
+            receivedPackets.Add(id);
+        }
+    }
     }
 }

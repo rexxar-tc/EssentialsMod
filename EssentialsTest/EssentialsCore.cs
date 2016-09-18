@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EssentialsTest;
 using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.Components;
@@ -84,6 +85,13 @@ namespace DedicatedEssentials
         public static string Credits { get; set; }
 
         public static string ServerSpeed { get; set; }
+
+        public static byte[] LastMessage;
+        public static DateTime LastReceived = DateTime.Now;
+
+        public static string LastChat;
+        public static DateTime LastSent = DateTime.Now;
+        public static List<long> MessageUniqueIds = new List<long>(20);
         
         // Initializers
         private void Initialize()
@@ -105,7 +113,6 @@ namespace DedicatedEssentials
 			m_simHandlers.Add(new ProcessDetection());
             m_simHandlers.Add(new ProcessLogin());
             m_simHandlers.Add(new ProcessCharacter());
-            m_simHandlers.Add( new ProcessToolbar() );
 
             // Server Command Handlers
             ServerCommandHandlers.ServerCommands.Add(new ServerCommandMessage());
@@ -132,7 +139,7 @@ namespace DedicatedEssentials
             m_dataHandlers.Add(new ServerDataMaxSpeed());
             m_dataHandlers.Add(new ServerDataInfo());
             m_dataHandlers.Add(new ServerDataWaypoint());
-            m_dataHandlers.Add( new ServerDataToolbar() );
+            m_dataHandlers.Add(new ServerDataGMenu());
 
             // Setup Grid Tracker
             //CubeGridTracker.SetupGridTracking();
@@ -144,7 +151,7 @@ namespace DedicatedEssentials
 
             //Communication.SendDataToServer( 5015, "init" );
 
-            MyAPIGateway.Entities.OnEntityAdd += Entities_OnEntityAdd;
+            //MyAPIGateway.Entities.OnEntityAdd += Entities_OnEntityAdd;
        }
 
         private void Entities_OnEntityAdd( IMyEntity entity )
@@ -203,6 +210,17 @@ namespace DedicatedEssentials
                 
                 if (messageText.StartsWith("/"))
                 {
+                    if ( messageText == LastChat && DateTime.Now - LastSent < TimeSpan.FromMilliseconds( 100 ) )
+                    {
+                        Logging.Instance.WriteLine( "Duplicate chat detected." );
+                        LastSent = DateTime.Now;
+                        sendToOthers = false;
+                        return;
+                    }
+
+                    LastChat = messageText;
+                    LastSent = DateTime.Now;
+
                     //message is probably a command, and it's probably for us, so send it to the server
                     Communication.SendDataToServer(5010, messageText);
                     sendToOthers = false;
@@ -216,42 +234,75 @@ namespace DedicatedEssentials
             }
         }
 
-		public static void HandleServerData(byte[] data)
+		public static void HandleServerData(byte[] fullData)
 		{
-            if (MyAPIGateway.Multiplayer.IsServer)
-                return;
+		    try
+		    {
+		        if ( MyAPIGateway.Multiplayer.IsServer )
+		            return;
 
-			Logging.Instance.WriteLine(string.Format("Received Server Data: {0} bytes", data.Length));
-			foreach (ServerDataHandlerBase handler in m_dataHandlers)
-			{
-				if (handler.CanHandle(data))
-				{
-					try
-					{
-						byte[] newData = handler.ProcessCommand(data);
-						handler.HandleCommand(newData);
-						break;
-					}
-					catch (Exception ex)
-					{
-						Logging.Instance.WriteLine(string.Format("HandleCommand(): {0}", ex.ToString()));
-					}
-				}
-			}
+		        long uniqueId = BitConverter.ToInt64( fullData, 0 );
+		        if ( MessageUniqueIds.Contains( uniqueId ) )
+		        {
+		            Logging.Instance.WriteLine( "Received duplicate message" );
+		            return;
+		        }
+
+		        if ( MessageUniqueIds.Count >= 20 )
+		            MessageUniqueIds.RemoveAt( 0 );
+
+		        MessageUniqueIds.Add( uniqueId );
+
+		        byte[] data = new byte[fullData.Length - sizeof(long)];
+		        Array.Copy( fullData, sizeof(long), data, 0, data.Length );
+
+		        if ( DateTime.Now - LastReceived < TimeSpan.FromMilliseconds( 100 ) && Utility.CompareBytes( data, LastMessage ) )
+		        {
+		            Logging.Instance.WriteLine( "Duplicate message received" );
+		            LastReceived = DateTime.Now;
+		            return;
+		        }
+
+		        LastReceived = DateTime.Now;
+		        LastMessage = data;
+
+		        Logging.Instance.WriteLine( string.Format( "Received Server Data: {0} bytes. ID: {1}", data.Length, BitConverter.ToInt64( data, 0 ) ) );
+
+		        foreach ( ServerDataHandlerBase handler in m_dataHandlers )
+		        {
+		            if ( handler.CanHandle( data ) )
+		            {
+		                try
+		                {
+		                    byte[] newData = handler.ProcessCommand( data );
+		                    handler.HandleCommand( newData );
+		                    break;
+		                }
+		                catch ( Exception ex )
+		                {
+		                    Logging.Instance.WriteLine( string.Format( "HandleCommand(): {0}", ex.ToString() ) );
+		                }
+		            }
+		        }
+		    }
+            catch ( Exception ex )
+		    {
+		        Logging.Instance.WriteLine( "Exception in HandleServerData" + ex.ToString() );
+		    }
 		}
 
         public void AddMessageHandler()
         {
             MyAPIGateway.Utilities.MessageEntered += HandleMessageEntered;
 			MyAPIGateway.Multiplayer.RegisterMessageHandler(9000, HandleServerData);
-            MyAPIGateway.Multiplayer.RegisterMessageHandler( 9006, Communication.ReveiveMessageParts );
+            MyAPIGateway.Multiplayer.RegisterMessageHandler( 9006, Communication.ReceiveMessageParts );
         }
 
         public void RemoveMessageHandler()
         {
             MyAPIGateway.Utilities.MessageEntered -= HandleMessageEntered;
 			MyAPIGateway.Multiplayer.UnregisterMessageHandler(9000, HandleServerData);
-            MyAPIGateway.Multiplayer.UnregisterMessageHandler(9006, Communication.ReveiveMessageParts);
+            MyAPIGateway.Multiplayer.UnregisterMessageHandler(9006, Communication.ReceiveMessageParts);
         }
 
         // Overrides

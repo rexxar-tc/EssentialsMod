@@ -93,17 +93,16 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlertLog.cs" />
     <Compile Include="CommandHandlerBase.cs" />
     <Compile Include="CommandPosition.cs" />
     <Compile Include="CommandTest.cs" />
     <Compile Include="Communication.cs" />
     <Compile Include="EssentialsCore.cs" />
-    <Compile Include="Grid.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="ProcessCharacter.cs" />
     <Compile Include="ProcessCommunication.cs" />
     <Compile Include="ProcessDetection.cs" />
-    <Compile Include="ProcessToolbar.cs" />
     <Compile Include="ProcessGreeting.cs" />
     <Compile Include="ProcessPosition.cs" />
     <Compile Include="ServerCommandConceal.cs" />
@@ -117,6 +116,7 @@
     <Compile Include="ServerCommandReveal.cs" />
     <Compile Include="ServerCommandTakeControl.cs" />
     <Compile Include="ServerCommandWaypoint.cs" />
+    <Compile Include="ServerDataGMenu.cs" />
     <Compile Include="ServerDataToolbar.cs" />
     <Compile Include="ServerDataWaypoint.cs" />
     <Compile Include="ServerDataChangeServer.cs" />
